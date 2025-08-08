@@ -31,8 +31,10 @@ import {
 import {Button} from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from "@/store/authStore"
+import { useTranslation } from 'react-i18next';
 
 export function NavUser() {
+  const { t } = useTranslation();
   const { isMobile, open  } = useSidebar();
   const navigate = useNavigate();
   const clearUser = useAuthStore((state) => state.clearUser)
@@ -73,7 +75,7 @@ export function NavUser() {
                   <div>
                     <LogIn className="h-5 w-5" />
                     {open && (
-                      <span className="ml-2">Login</span>
+                      <span className="ml-2">{t('menu.login')}</span>
                     )}
                   </div>
                 </Button>
@@ -113,7 +115,7 @@ export function NavUser() {
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogOut}>
                 <LogOut />
-                Log out
+                {t('logout')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           )}

@@ -1,0 +1,109 @@
+import type { ColumnDef } from "@tanstack/react-table"
+import { ArrowUpDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge"
+import { CircleCheck, CircleX } from "lucide-react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+export type User = {
+  id: string
+  email: string
+  status: "active" | "blocked"
+  fullName: string
+  avatar: string
+  createdAt: string
+}
+
+export function getColumns(t: (key: string) => string): ColumnDef<User>[] {
+  return [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "fullName",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {t('name')}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const { fullName, avatar, createdAt } = row.original
+        const createdDate = new Date(createdAt)
+
+        return (
+          <div className="text-right font-medium flex gap-3">
+            <Avatar>
+              <AvatarImage src={avatar} />
+              <AvatarFallback>{fullName?.[0]?.toUpperCase() ?? "?"}</AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-medium">{fullName}</span>
+              <span className="truncate text-xs text-muted-foreground">
+                {t('createdAt')}: {createdDate.toLocaleDateString()}
+              </span>
+            </div>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "email",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {t('email')}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+    {
+      accessorKey: "status",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {t('status')}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string
+        return (
+          <Badge variant="outline" className="flex items-center gap-2">
+            {status === "active" && <CircleCheck className="h-3 w-3 text-green-500" />}
+            {status === "blocked" && <CircleX className="h-3 w-3 text-red-500" />}
+            {t(status)}
+          </Badge>
+        )
+      },
+    },
+  ]
+}

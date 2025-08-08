@@ -14,14 +14,16 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  fullName  String?
-  givenName  String?
-  familyName  String?
-  avatar    String?
-  password  String?
+  id                String    @id @default(uuid())
+  email             String    @unique
+  fullName          String?
+  givenName         String?
+  familyName        String?
+  avatar            String?
+  avatarFallback    String?
+  password          String?
   role      Role     @default(user)
+  status    Status     @default(active)
   accounts  Account[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -41,6 +43,11 @@ enum Role {
   guest
   user
   admin
+}
+
+enum Status {
+  active
+  blocked
 }
 
 enum Provider {

@@ -6,7 +6,7 @@ export function auth(requiredRole = "USER") {
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
-      if (requiredRole === "GUEST") return next();
+      if (requiredRole === "guest") return next();
       return res.status(401).json({ error: "Authorization is required." });
     }
 

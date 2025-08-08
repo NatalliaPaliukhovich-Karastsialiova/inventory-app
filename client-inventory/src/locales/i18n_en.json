@@ -1,0 +1,60 @@
+{
+  "logout": "Log out",
+  "inventory": "Inventory",
+  "loginSuccessful": "Login successful!",
+  "menu": {
+    "login": "Login"
+  },
+  "register": {
+    "title": "Create your account",
+    "subtitle": "Enter your email below to create your account",
+    "email": "Email",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "password": "Password",
+    "confirmPassword": "Repeat Password",
+    "createAccount": "Create Account",
+    "orContinueWith": "Or continue with",
+    "google": "Login with Google",
+    "github": "Login with Github",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+  "login": {
+    "title": "Login to your account",
+    "subtitle": "Enter your email below to login to your account",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "orContinueWith": "Or continue with",
+    "google": "Login with Google",
+    "github": "Login with Github",
+    "loginSuccessful": "Login successful",
+    "loginError": "Login error",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up"
+  },
+  "validation": {
+    "invalidEmail": "Please enter a valid email",
+    "minPassword": "Minimum 6 characters",
+    "uppercase": "At least 1 uppercase letter",
+    "number": "At least 1 number",
+    "passwordsDontMatch": "Passwords do not match",
+    "requiredFirstName": "First name is required",
+    "requiredLastName": "Last name is required"
+  },
+  "active": "Active",
+  "blocked": "Blocked",
+  "status": "Status",
+  "email": "Email",
+  "createdAt": "Created At",
+  "name": "Name",
+  "adminConsole": "Admin Console",
+  "inventories": "Inventories",
+  "templates": "Templates",
+  "home": "Home",
+  "users": "Users",
+  "refresh": "Refresh",
+  "addUser": "Add user",
+  "searchPlaceholder": "Search by name or email"
+}

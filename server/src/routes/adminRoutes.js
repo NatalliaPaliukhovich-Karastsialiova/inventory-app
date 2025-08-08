@@ -4,6 +4,6 @@ import { getAllUsers } from "../controllers/adminController.js";
 
 const router = Router();
 
-router.get("/users", auth("ADMIN"), getAllUsers);
+router.get("/users", auth("admin"), getAllUsers);
 
 export default router;

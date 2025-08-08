@@ -20,76 +20,35 @@ import { AppLogo } from "./AppLogo"
 const data = {
   navMain: [
     {
-      title: "Playground",
+      title: "home",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
+      access: 'user'
     },
     {
-      title: "Models",
+      title: "templates",
       url: "#",
       icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
+      access: 'user'
     },
     {
-      title: "Documentation",
+      title: "inventories",
       url: "#",
       icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
+      access: 'user'
     },
     {
-      title: "Settings",
-      url: "#",
+      title: "adminConsole",
+      url: "/admin",
       icon: Settings2,
+      access: 'admin'
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

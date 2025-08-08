@@ -7,6 +7,7 @@ type User = {
   email: string,
   avatar: string,
   token: string,
+  role: string,
 }
 
 type AuthState = {
