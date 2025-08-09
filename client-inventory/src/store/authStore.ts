@@ -4,10 +4,15 @@ import { persist } from 'zustand/middleware'
 type User = {
   id: string
   fullName: string
-  email: string,
-  avatar: string,
-  token: string,
-  role: string,
+  familyName: null
+  givenName: null
+  email: string
+  avatar: string
+  avatarFallback: string
+  token: string
+  role: string
+  status: string
+  createdAt: string
 }
 
 type AuthState = {

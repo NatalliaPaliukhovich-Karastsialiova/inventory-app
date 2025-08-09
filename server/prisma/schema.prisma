@@ -27,13 +27,15 @@ model User {
   accounts  Account[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  inventories       Inventory[]         @relation("InventoryOwner")
+  inventoryAccesses InventoryAccess[]   @relation("InventoryAccessUser")
 }
 
 model Account {
   id           String   @id @default(uuid())
   provider     Provider
   providerId   String
-  user         User      @relation(fields: [userId], references: [id])
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
 
   @@unique([provider, providerId])
@@ -53,4 +55,58 @@ enum Status {
 enum Provider {
   google
   github
+}
+
+enum InventoryCategory {
+  equipment
+  furniture
+  book
+  other
+}
+
+model Inventory {
+  id          String              @id @default(uuid())
+  title       String
+  description String?
+  category    InventoryCategory
+  imageUrl    String?
+  tags        InventoryTagOnItem[]
+  isPublic    Boolean             @default(false)
+
+  ownerId     String
+  owner       User                @relation("InventoryOwner", fields: [ownerId], references: [id])
+
+  accessList  InventoryAccess[]
+
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  version     Int                 @default(1)
+
+  @@index([title])
+  @@index([category])
+}
+
+model Tag {
+  id    String              @id @default(uuid())
+  name  String              @unique
+  items InventoryTagOnItem[]
+}
+
+model InventoryTagOnItem {
+  inventoryId String
+  tagId       String
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  tag         Tag       @relation(fields: [tagId], references: [id])
+
+  @@id([inventoryId, tagId])
+}
+
+model InventoryAccess {
+  inventoryId String
+  userId      String
+  canWrite    Boolean           @default(true)
+  inventory   Inventory         @relation(fields: [inventoryId], references: [id])
+  user        User              @relation("InventoryAccessUser", fields: [userId], references: [id])
+
+  @@id([inventoryId, userId])
 }

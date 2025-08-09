@@ -21,20 +21,20 @@ const data = {
   navMain: [
     {
       title: "home",
-      url: "#",
+      url: "/",
       icon: SquareTerminal,
       isActive: true,
       access: 'user'
     },
     {
       title: "templates",
-      url: "#",
+      url: "/",
       icon: Bot,
       access: 'user'
     },
     {
       title: "inventories",
-      url: "#",
+      url: "/inventories",
       icon: BookOpen,
       access: 'user'
     },

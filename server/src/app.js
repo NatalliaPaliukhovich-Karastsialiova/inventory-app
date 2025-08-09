@@ -5,6 +5,7 @@ import passport from 'passport';
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 
 import './config/passport/google.js';
 import './config/passport/github.js';
@@ -17,5 +18,6 @@ app.use(passport.initialize());
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
+app.use('/api/v1/inventories', inventoryRoutes);
 
 export default app;

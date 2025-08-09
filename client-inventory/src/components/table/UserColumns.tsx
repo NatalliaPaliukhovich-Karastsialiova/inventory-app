@@ -105,5 +105,23 @@ export function getColumns(t: (key: string) => string): ColumnDef<User>[] {
         )
       },
     },
+    {
+      accessorKey: "role",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          {t('role')}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const status = row.getValue("role") as string
+        return (
+          <span className="truncate font-medium">{t(status)}</span>
+        )
+      },
+    },
   ]
 }

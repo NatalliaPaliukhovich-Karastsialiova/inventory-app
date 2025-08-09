@@ -4,6 +4,6 @@ import { getProfile } from "../controllers/userController.js";
 
 const router = Router();
 
-router.get("/profile", auth("USER"), getProfile);
+router.get("/profile", auth("user"), getProfile);
 
 export default router;

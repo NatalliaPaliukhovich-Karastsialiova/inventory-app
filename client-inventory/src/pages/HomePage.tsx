@@ -1,6 +1,6 @@
 import DashboardLayout from "@/layouts/DashboardLayout"
 
-export default function AdminPage() {
+export default function HomePage() {
   return (
     <DashboardLayout>
       <div className="grid auto-rows-min gap-4 md:grid-cols-3">

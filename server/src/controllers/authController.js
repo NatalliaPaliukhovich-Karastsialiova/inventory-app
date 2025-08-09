@@ -1,6 +1,6 @@
 import prisma from "../config/db.js";
-import { hashPassword, comparePassword, generateToken } from "../utils/cryptoUtils.js";
-import passport from 'passport';
+import { hashPassword, comparePassword } from "../utils/cryptoUtils.js";
+import { getUserProfile } from "../models/userModel.js";
 
 export const registerWebUser = async (req, res) => {
   try {
@@ -26,8 +26,8 @@ export const registerWebUser = async (req, res) => {
         data: { password: hashedPassword },
       });
     }
-
-    res.json({ token: generateToken(currentUser), user: { id: currentUser.id, email } });
+    const profile = await getUserProfile(currentUser.id)
+    res.json(profile);
   } catch (err) {
     return res.status(500).json({ error: `Error creating user, ${err.message}`});
   }
@@ -40,29 +40,45 @@ export const loginWebUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User doesn't exist"});
     }
+    if (user.status === 'blocked') {
+      return res.status(403).json({ error: "User blocked"});
+    }
     if(!user.password && password)
       return res.status(401).json({ error: "User wasn't registered by Email and Password." });
     if (!(await comparePassword(password, user.password)))
       return res.status(401).json({ error: "Invalid email or password." });
-    return res.json({ token: generateToken(user), user: { id: user.id, email, avatar: user.avatar, fullName: user.fullName } });
+      const profile = await getUserProfile(user.id)
+    return res.json(profile);
   } catch (err) {
     return res.status(500).json({ error: `Error generating token., ${err.message}`});
   }
 };
 
-export const socialCallbackController = (req, res) => {
+export const socialCallbackController = async (req, res) => {
   const user = req.user;
+  let error = null;
 
   if (!user) {
-    return res.status(401).send('Unauthorized')
+    error = "Error: Unauthorized";
+  } else if (user.status === "blocked") {
+    error = "Error: User blocked";
   }
 
-  user.token = generateToken(user)
+  if (error) {
+    return res.send(`
+      <script>
+        window.opener.postMessage(${JSON.stringify({ error })}, '*');
+        window.close();
+      </script>
+    `);
+  }
+
+  const profile = await getUserProfile(user.id);
 
   res.send(`
     <script>
-      window.opener.postMessage(${JSON.stringify(user)}, '*');
+      window.opener.postMessage(${JSON.stringify(profile)}, '*');
       window.close();
     </script>
-  `)
+  `);
 }

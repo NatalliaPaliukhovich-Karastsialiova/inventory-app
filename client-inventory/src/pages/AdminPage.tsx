@@ -2,20 +2,25 @@
 
 import { useEffect, useState } from "react"
 import DashboardLayout from "@/layouts/DashboardLayout"
-import { getColumns } from "@/components/table/Columns"
-import type { User } from "@/components/table/Columns"
+import { getColumns } from "@/components/table/UserColumns"
+import type { User } from "@/components/table/UserColumns"
 import { DataTable } from "@/components/table/DataTable"
 import { toast } from "sonner"
 import { useTranslation } from "react-i18next"
-import { fetchUsers } from "@/services/api"
+import { fetchUsers, getProfile, processUsersBatch } from "@/services/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { PlusCircle, RefreshCw } from "lucide-react"
+import { Trash } from "lucide-react"
+import { useAuthStore } from "@/store/authStore"
+import { Navigate, useNavigate } from "react-router-dom"
 
 export default function AdminPage() {
   const [data, setData] = useState<User[]>([])
   const [search, setSearch] = useState("")
   const { t, i18n } = useTranslation()
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const user = useAuthStore.getState().user;
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function getData() {
@@ -37,33 +42,84 @@ export default function AdminPage() {
       user.email?.toLowerCase().includes(search.toLowerCase())
   )
 
+  const handleAction = async (type: string) => {
+    try {
+      if (selectedUsers.length === 0) {
+        alert(t("noSelection"));
+        return;
+      }
+      await processUsersBatch(selectedUsers, type);
+      const updatedUsers = await fetchUsers();
+      setData(updatedUsers);
+      if(selectedUsers.includes(user?.id as string)){
+        await getProfile()
+        if(type === 'block' || type === 'remove-admin' || type === 'delete'){
+          useAuthStore.getState().clearUser();
+          navigate('/')
+        }
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || t("actionError"));
+    }
+  };
+
   return (
     <DashboardLayout>
       <div className="container mx-auto py-10 space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">{t("users")}</h2>
         </div>
-        <div className="flex justify-between gap-2">
+        <div className="flex flex-wrap justify-between gap-2">
           <Input
             placeholder={t("searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-sm"
           />
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => console.log("refresh")}
+              onClick={() => handleAction("block")}
             >
-              <RefreshCw className="h-4 w-4 mr-2" /> {t("refresh")}
+              {t("block")}
             </Button>
-            <Button size="sm" onClick={() => console.log("add user")}>
-              <PlusCircle className="h-4 w-4 mr-2" /> {t("addUser")}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleAction("unblock")}
+            >
+              {t("unblock")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleAction("make-admin")}
+            >
+              {t("makeAdmin")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleAction("remove-admin")}
+            >
+              {t("removeAdmin")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleAction("delete")}
+            >
+              <Trash />
+              {t("delete")}
             </Button>
           </div>
         </div>
-        <DataTable columns={columns} data={filteredData} />
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          onSelectionChange={(ids: string[]) => setSelectedUsers(ids)}
+        />
       </div>
     </DashboardLayout>
   )

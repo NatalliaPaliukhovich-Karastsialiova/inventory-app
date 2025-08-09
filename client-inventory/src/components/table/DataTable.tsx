@@ -21,15 +21,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { useEffect } from "react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  onSelectionChange?: (ids: string[]) => void
+  onRowClick?: (row: TData) => void
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData extends { id: string }, TValue>({
   columns,
   data,
+  onSelectionChange,
+  onRowClick
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -53,6 +58,11 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   })
+
+  useEffect(() => {
+    const selectedIds = table.getSelectedRowModel().rows.map((r) => r.original.id);
+    onSelectionChange?.(selectedIds);
+  }, [rowSelection]);
 
   return (
     <>
@@ -82,6 +92,7 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                onClick={() => onRowClick?.(row.original)}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
@@ -99,7 +110,7 @@ export function DataTable<TData, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="space-x-2 py-4">
         <DataTablePagination table={table}/>
       </div>
     </div>

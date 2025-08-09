@@ -1,6 +1,6 @@
-import prisma from "../config/db.js";
+import { getUserProfile } from "../models/userModel.js";
 
 export const getProfile = async (req, res) => {
-  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+  const user = await getUserProfile(req.user.id)
   return res.json(user);
 }

@@ -1,6 +1,5 @@
 {
   "logout": "Log out",
-  "inventory": "Inventory",
   "loginSuccessful": "Login successful!",
   "menu": {
     "login": "Login"
@@ -49,6 +48,9 @@
   "email": "Email",
   "createdAt": "Created At",
   "name": "Name",
+  "role": "Role",
+  "admin": "Admin",
+  "user": "User",
   "adminConsole": "Admin Console",
   "inventories": "Inventories",
   "templates": "Templates",
@@ -56,5 +58,21 @@
   "users": "Users",
   "refresh": "Refresh",
   "addUser": "Add user",
-  "searchPlaceholder": "Search by name or email"
+  "searchPlaceholder": "Search by name or email",
+  "block": "Block",
+  "unblock": "Unblock",
+  "delete": "Delete",
+  "makeAdmin": "Make admin",
+  "removeAdmin": "Remove admin",
+  "inventory": {
+    "create": "Create",
+    "title": "Title",
+    "category": "Category",
+    "owner": "Owner",
+    "equipment": "Equipment",
+    "furniture": "Furniture",
+    "book": "Books",
+    "other": "Other",
+    "searchPlaceholder": "Search by title"
+  }
 }

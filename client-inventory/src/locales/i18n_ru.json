@@ -1,6 +1,5 @@
 {
   "logout": "Выйти",
-  "inventory": "Инвентарь",
   "loginSuccessful": "Успешный вход!",
   "register": {
     "title": "Создайте аккаунт",
@@ -49,9 +48,30 @@
   "addUser": "Добавить пользователя",
   "searchPlaceholder": "Поиск по имени или email",
   "name": "Имя",
+  "role": "Роль",
+  "admin": "Админ",
+  "user": "Пользователь",
   "email": "Почта",
   "status": "Статус",
   "createdAt": "Создан",
   "active": "Активен",
-  "blocked": "Заблокирован"
+  "blocked": "Заблокирован",
+  "block": "Заблокировать",
+  "unblock": "Разблокировать",
+  "delete": "Удалить",
+  "makeAdmin": "Сделать админом",
+  "removeAdmin": "Убрать из админов",
+  "create": "Создать",
+  "inventory": {
+    "create": "Создать",
+    "title": "Название",
+    "category": "Категория",
+    "owner": "Владелец",
+    "equipment": "Оборудование",
+    "furniture": "Мебель",
+    "book": "Книга",
+    "other": "Другое",
+    "searchPlaceholder": "Поиск по названию"
+  }
+
 }
