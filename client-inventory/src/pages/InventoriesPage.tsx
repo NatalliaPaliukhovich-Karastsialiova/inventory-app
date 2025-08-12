@@ -38,18 +38,6 @@ export default function InventoriesPage() {
       inventory.title?.toLowerCase().includes(search.toLowerCase())
   )
 
-  const handleAction = async (type: string) => {
-    try {
-      if (selectedUsers.length === 0) {
-        alert(t("noSelection"));
-        return;
-      }
-
-    } catch (error: any) {
-      toast.error(error?.response?.data?.error || t("actionError"));
-    }
-  };
-
   return (
     <DashboardLayout>
       <div className="container mx-auto py-1 space-y-4">
@@ -63,19 +51,21 @@ export default function InventoriesPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-sm"
           />
-          <div className="flex flex-wrap gap-2">
+          {user && (
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleAction("create")}
+              onClick={() => navigate(`/inventories/new`)}
             >
               {t("inventory.create")}
             </Button>
-          </div>
+          )}
         </div>
         <DataTable
           columns={columns}
           data={filteredData}
+          showPagination={true}
+          getRowId={(row) => row.id}
           onSelectionChange={(ids: string[]) => setSelectedUsers(ids)}
           onRowClick={(row) => navigate(`/inventories/${row.id}`)}
         />

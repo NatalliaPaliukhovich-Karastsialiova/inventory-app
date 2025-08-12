@@ -8,9 +8,7 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table"
 
-import type { ColumnDef } from "@tanstack/react-table"
-import type { SortingState } from "@tanstack/react-table"
-import type { ColumnFiltersState } from "@tanstack/react-table"
+import type { ColumnDef, SortingState, ColumnFiltersState } from "@tanstack/react-table"
 import { DataTablePagination } from "./Pagination"
 
 import {
@@ -21,18 +19,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
 import { useEffect } from "react"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  showPagination: boolean
+  getRowId?: (row: TData) => string
   onSelectionChange?: (ids: string[]) => void
   onRowClick?: (row: TData) => void
 }
 
-export function DataTable<TData extends { id: string }, TValue>({
+export function DataTable<TData, TValue>({
   columns,
   data,
+  showPagination,
+  getRowId = (row: any) => row.id,
   onSelectionChange,
   onRowClick
 }: DataTableProps<TData, TValue>) {
@@ -45,6 +48,7 @@ export function DataTable<TData extends { id: string }, TValue>({
   const table = useReactTable({
     data,
     columns,
+    getRowId,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -60,7 +64,7 @@ export function DataTable<TData extends { id: string }, TValue>({
   })
 
   useEffect(() => {
-    const selectedIds = table.getSelectedRowModel().rows.map((r) => r.original.id);
+    const selectedIds = table.getSelectedRowModel().rows.map((r) => getRowId(r.original));
     onSelectionChange?.(selectedIds);
   }, [rowSelection]);
 
@@ -110,9 +114,11 @@ export function DataTable<TData extends { id: string }, TValue>({
           )}
         </TableBody>
       </Table>
-      <div className="space-x-2 py-4">
-        <DataTablePagination table={table}/>
-      </div>
+      {showPagination && (
+        <div className="space-x-2 py-4">
+          <DataTablePagination table={table}/>
+        </div>
+      )}
     </div>
     </>
   )

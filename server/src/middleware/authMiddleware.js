@@ -4,7 +4,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export function auth(requiredRole = "user") {
   return (req, res, next) => {
     const authHeader = req.headers.authorization;
-
     if (!authHeader) {
       if (requiredRole === "guest") return next();
       return res.status(401).json({ error: "Authorization is required." });

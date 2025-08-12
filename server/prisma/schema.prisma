@@ -29,6 +29,7 @@ model User {
   updatedAt DateTime  @updatedAt
   inventories       Inventory[]         @relation("InventoryOwner")
   inventoryAccesses InventoryAccess[]   @relation("InventoryAccessUser")
+  inventoryMessages InventoryMessage[]
 }
 
 model Account {
@@ -74,13 +75,17 @@ model Inventory {
   isPublic    Boolean             @default(false)
 
   ownerId     String
-  owner       User                @relation("InventoryOwner", fields: [ownerId], references: [id])
+  owner       User                @relation("InventoryOwner", fields: [ownerId], references: [id], onDelete: Cascade)
 
   accessList  InventoryAccess[]
 
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   version     Int                 @default(1)
+
+  customIdElements CustomIdElement[]
+  inventoryField InventoryField[]
+  inventoryMessage InventoryMessage []
 
   @@index([title])
   @@index([category])
@@ -104,9 +109,66 @@ model InventoryTagOnItem {
 model InventoryAccess {
   inventoryId String
   userId      String
-  canWrite    Boolean           @default(true)
   inventory   Inventory         @relation(fields: [inventoryId], references: [id])
-  user        User              @relation("InventoryAccessUser", fields: [userId], references: [id])
+  user        User              @relation("InventoryAccessUser", fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([inventoryId, userId])
+}
+
+model InventoryField {
+  id          String       @id @default(uuid())
+  inventoryId String
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  label       String
+  description String?
+  type        FieldType
+  orderIndex  Int
+  showInTable Boolean   @default(false)
+}
+
+enum FieldType {
+  single_line_text
+  multi_line_text
+  number
+  link
+  boolean
+}
+
+model CustomIdElement {
+  id           String    @id @default(uuid())
+  inventoryId  String
+  inventory    Inventory @relation(fields: [inventoryId], references: [id])
+  orderIndex   Int
+  type         IdSeqType
+  value        String
+  separator    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum IdSeqType {
+  fixed
+  guid
+  date
+  seq
+  rand6
+  rand9
+  rand20
+  rand32
+}
+
+model InventoryMessage {
+  id          String    @id @default(uuid())
+  inventoryId String
+  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  text        String
+  createdAt   DateTime  @default(now())
+
+  @@index([inventoryId])
+  @@index([userId])
 }

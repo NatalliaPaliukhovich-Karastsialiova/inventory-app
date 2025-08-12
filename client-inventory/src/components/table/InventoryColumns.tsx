@@ -5,6 +5,48 @@ import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import type { User } from "./UserColumns"
 
+type CustomIdType =
+  | "fixed"
+  | "rand20"
+  | "rand32"
+  | "rand6"
+  | "rand9"
+  | "date"
+  | "seq"
+  | "guid";
+
+export type CustomIdElement = {
+  id: string;
+  type: CustomIdType;
+  separator?: string;
+  value?: string;
+};
+
+type FieldType =
+  | "single_line_text"
+  | "multi_line_text"
+  | "number"
+  | "link"
+  | "boolean";
+
+export type CustomField = {
+  id: string;
+  label: string;
+  type: FieldType;
+  description: string;
+  showInTable: boolean;
+}
+
+export type UserAccessList = {
+  userId: string;
+  user: {
+    email: string;
+    fullName: string;
+    avatar?: string,
+    avatarFallback?: string
+  };
+}
+
 export type Inventory = {
   id: string
   title: string
@@ -14,6 +56,9 @@ export type Inventory = {
   description: string
   createdAt: string
   imageUrl: string
+  customIdElements?: CustomIdElement[]
+  inventoryField?: CustomField[]
+  accessList?: UserAccessList[]
 }
 
 export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {

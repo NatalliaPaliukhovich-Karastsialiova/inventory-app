@@ -48,6 +48,12 @@ export default function App() {
           />
           <Route path="/inventories" element={<InventoriesPage />}/>
           <Route path="/inventories/:id" element={<InventoryDetailsPage />} />
+          <Route path="/inventories/new" element={
+              <NonAuthRedirectRoute>
+                <InventoryDetailsPage />
+              </NonAuthRedirectRoute>
+            }
+          />
         </Routes>
       </Router>
     </ThemeProvider>

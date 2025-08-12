@@ -1,4 +1,37 @@
-import app from "./app.js";
+import express from "express";
+import cors from "cors";
+import passport from 'passport';
+import { Server } from 'socket.io';
+import http from 'http';
+
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
+import chatSocket from "./sockets/chatSocket.js";
+
+import './config/passport/google.js';
+import './config/passport/github.js';
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(passport.initialize());
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: '*' },
+  maxHttpBufferSize: 1e8
+});
+
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/admin", adminRoutes);
+app.use('/api/v1/inventories', inventoryRoutes);
+
+io.on('connection', (socket) => {
+  chatSocket(io, socket);
+});
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

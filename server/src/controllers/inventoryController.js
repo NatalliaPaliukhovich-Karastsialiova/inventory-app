@@ -1,4 +1,5 @@
 import prisma from "../config/db.js";
+import { generateCustomId } from "../utils/cryptoUtils.js";
 
 export async function createInventory(req, res) {
   try {
@@ -20,14 +21,13 @@ export async function createInventory(req, res) {
         category,
         imageUrl,
         isPublic,
-        ownerId,
+        ownerId : req.user.id,
         tags: {
           create: tagIds.map(tagId => ({ tagId }))
         },
         accessList: {
-          create: accessList.map(({ userId, canWrite }) => ({
-            userId,
-            canWrite: canWrite ?? true,
+          create: accessList.map(({ userId }) => ({
+            userId
           }))
         }
       },
@@ -52,7 +52,42 @@ export async function getInventoryById(req, res) {
       where: { id },
       include: {
         tags: { include: { tag: true } },
-        accessList: true,
+        accessList: {
+          include: {
+            user: {
+              select: {
+                email: true,
+                fullName: true,
+                avatar: true,
+                avatarFallback: true
+              }
+            }
+          }
+        },
+        owner: true,
+        customIdElements: true,
+        inventoryField: true
+      }
+    });
+
+    if (!inventory) {
+      return res.status(404).json({ error: 'Inventory not found' });
+    }
+
+    res.json(inventory);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch inventory' });
+  }
+}
+
+export async function getInventoryByIdExternal(req, res) {
+  try {
+    const { id } = req.params;
+
+    const inventory = await prisma.inventory.findUnique({
+      where: { id },
+      include: {
         owner: true,
       }
     });
@@ -78,9 +113,10 @@ export async function updateInventory(req, res) {
       imageUrl,
       tagIds,
       isPublic,
-      accessList
+      accessList,
+      customIdElements,
+      inventoryField
     } = req.body;
-
     const dataToUpdate = {
       ...(title && { title }),
       ...(description && { description }),
@@ -107,10 +143,38 @@ export async function updateInventory(req, res) {
     if (accessList) {
       await prisma.inventoryAccess.deleteMany({ where: { inventoryId: id } });
       await prisma.inventoryAccess.createMany({
-        data: accessList.map(({ userId, canWrite }) => ({
+        data: accessList.map(({ userId }) => ({
           inventoryId: id,
           userId,
-          canWrite: canWrite ?? true,
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    if (Array.isArray(customIdElements)) {
+      await prisma.customIdElement.deleteMany({ where: { inventoryId: id } });
+      await prisma.customIdElement.createMany({
+        data: customIdElements.map((el, index) => ({
+          inventoryId: id,
+          orderIndex: index,
+          type: el.type,
+          value: el.value || '',
+          separator: el.separator || null
+        })),
+        skipDuplicates: true,
+      });
+    }
+
+    if (Array.isArray(inventoryField)) {
+      await prisma.inventoryField.deleteMany({ where: { inventoryId: id } });
+      await prisma.inventoryField.createMany({
+        data: inventoryField.map((el, index) => ({
+          inventoryId: id,
+          orderIndex: index,
+          type: el.type,
+          description: el.description || '',
+          label: el.label || '',
+          showInTable: el.showInTable || false
         })),
         skipDuplicates: true,
       });
@@ -122,9 +186,10 @@ export async function updateInventory(req, res) {
         tags: { include: { tag: true } },
         accessList: true,
         owner: true,
+        customIdElements: true,
+        inventoryField: true
       }
     });
-
     res.json(result);
   } catch (error) {
     console.error(error);
@@ -149,17 +214,31 @@ export async function deleteInventory(req, res) {
 
 export async function listInventories(req, res) {
   try {
-    const { ownerId, category } = req.query;
-
-    const where = {};
-    if (ownerId) where.ownerId = ownerId;
-    if (category) where.category = category;
-
     const inventories = await prisma.inventory.findMany({
-      where,
       include: {
         tags: { include: { tag: true } },
         accessList: true,
+        owner: true,
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(inventories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch inventories' });
+  }
+}
+
+export async function myListInventories(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const inventories = await prisma.inventory.findMany({
+      where: {
+        ownerId: userId,
+      },
+      include: {
         owner: true,
       },
       orderBy: { createdAt: 'desc' }
