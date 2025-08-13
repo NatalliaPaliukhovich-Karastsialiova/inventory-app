@@ -64,7 +64,7 @@ export function ProfileSettings() {
   }
 
   return (
-    <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min">
+    <div className="bg-muted/50 flex-1 rounded-xl md:min-h-min">
       <Form {...form}>
         <form className={"flex flex-col gap-6 p-10"}
           onSubmit={form.handleSubmit(handleSave)}

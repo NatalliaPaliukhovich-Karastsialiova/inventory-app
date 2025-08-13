@@ -118,6 +118,7 @@ export default function AdminPage() {
         <DataTable
           columns={columns}
           data={filteredData}
+          showPagination={true}
           onSelectionChange={(ids: string[]) => setSelectedUsers(ids)}
         />
       </div>

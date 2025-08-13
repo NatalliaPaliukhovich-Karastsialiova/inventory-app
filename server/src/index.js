@@ -9,6 +9,8 @@ import userRoutes from "./routes/userRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import inventoryRoutes from "./routes/inventoryRoutes.js";
 import chatSocket from "./sockets/chatSocket.js";
+import itemRoutes from "./routes/itemRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js"
 
 import './config/passport/google.js';
 import './config/passport/github.js';
@@ -28,6 +30,8 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/admin", adminRoutes);
 app.use('/api/v1/inventories', inventoryRoutes);
+app.use('/api/v1/items', itemRoutes);
+app.use('/api/v1/dashboard', dashboardRoutes);
 
 io.on('connection', (socket) => {
   chatSocket(io, socket);

@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/ThemeProvider"
 import { Toaster } from 'sonner'
 import { AuthRedirectRoute, AuthRedirectAdminRoute, NonAuthRedirectRoute } from "./components/AuthRedirectRoute";
 import InventoryDetailsPage from "./pages/InventoryDetailsPage";
+import ItemPage from "./pages/ItemPage";
 
 export default function App() {
   return (
@@ -52,6 +53,16 @@ export default function App() {
               <NonAuthRedirectRoute>
                 <InventoryDetailsPage />
               </NonAuthRedirectRoute>
+            }
+          />
+          <Route path="/inventories/:id/items/new" element={
+              <NonAuthRedirectRoute>
+                <ItemPage />
+              </NonAuthRedirectRoute>
+            }
+          />
+          <Route path="/inventories/:id/items/:itemId" element={
+              <ItemPage />
             }
           />
         </Routes>

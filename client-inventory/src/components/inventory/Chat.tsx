@@ -7,6 +7,7 @@ import { Button } from '../ui/button';
 import { Textarea } from '../ui/textarea';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize from "rehype-sanitize";
+import { Separator } from "@/components/ui/separator"
 
 interface ChatProps {
   inventoryId: string;
@@ -47,15 +48,15 @@ export default function Chat({
   };
 
 
- return (
+return (
   <div className="bg-muted/50 min-h-screen flex flex-col rounded-xl grow-0">
-    <div className="flex-1 overflow-y-auto p-10 space-y-3 pb-28">
+    <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 pb-28">
       {messages.map((m) => {
         const isOwn = m.user.id === user?.id;
         return (
           <div
             key={m.id}
-            className={`flex gap-3 mb-6 ${isOwn ? "justify-end" : "justify-start"}`}
+            className={`flex gap-3 mb-4 ${isOwn ? "justify-end" : "justify-start"}`}
           >
             {!isOwn && (
               <img
@@ -64,19 +65,19 @@ export default function Chat({
                 className="w-8 h-8 rounded-lg"
               />
             )}
-            <div className={`w-6/12`}>
+            <div className="max-w-[85%] sm:max-w-[60%] border rounded-md bg-muted/90 p-2">
               <div className={`font-semibold ${isOwn ? "text-right" : "text-left"}`}>{m.user.fullName}</div>
-              <div
-                className={`text-xs text-gray-400 ${isOwn ? "text-right" : "text-left"}`}
-              >
-                {m.user.email} - {new Date(m.createdAt).toLocaleString()}
+              <div className={`text-xs text-gray-400 ${isOwn ? "text-right" : "text-left"}`}>
+                {m.user.email}
               </div>
-              <div
-                className="prose prose-sm prose-stone dark:prose-invert max-w-none p-2 border rounded-md bg-muted/30 overflow-y-auto"
-              >
+              <div className="prose prose-sm prose-stone dark:prose-invert max-w-none p-3 overflow-y-auto">
+                <Separator />
                 <ReactMarkdown rehypePlugins={[rehypeSanitize]}>
                   {m.text}
                 </ReactMarkdown>
+              </div>
+              <div className="text-xs text-gray-400 text-right">
+                {new Date(m.createdAt).toLocaleString()}
               </div>
             </div>
             {isOwn && (
@@ -91,22 +92,18 @@ export default function Chat({
       })}
     </div>
 
-    <div className="sticky bottom-0 left-0 w-full border-t bg-muted p-4 flex gap-2 items-center">
+    <div className="sticky bottom-0 left-0 w-full p-3 sm:p-4 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center bg-muted/50">
       <Textarea
         placeholder="Write your message in Markdown..."
         rows={3}
         value={text ?? ""}
         onChange={(e) => setText(e.target.value)}
-        className="resize-none font-mono flex-1"
+        className="resize-none font-mono flex-1 bg-white dark:bg-slate-800 border-slate-500"
       />
-      <Button
-        onClick={handleSend}
-        className="px-4"
-      >
+      <Button onClick={handleSend} className="px-4 w-full sm:w-auto">
         Send
       </Button>
     </div>
   </div>
-);
-
+  );
 }

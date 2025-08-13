@@ -46,7 +46,7 @@ export function getColumns(t: (key: string) => string): ColumnDef<UserAccessList
 
         return (
           <div className="text-right font-medium flex gap-3">
-            <Avatar>
+            <Avatar className="rounded-lg">
               <AvatarImage src={avatar} />
               <AvatarFallback>{fullName?.[0]?.toUpperCase() ?? "?"}</AvatarFallback>
             </Avatar>

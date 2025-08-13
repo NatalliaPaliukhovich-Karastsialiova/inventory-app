@@ -6,7 +6,9 @@ import {
   deleteInventory,
   listInventories,
   getInventoryByIdExternal,
-  myListInventories
+  myListInventories,
+  createItem,
+  getItems
 } from '../controllers/inventoryController.js';
 import { auth } from "../middleware/authMiddleware.js";
 import { getInventoryMessages } from "../controllers/inventoryMessageController.js";
@@ -15,11 +17,13 @@ const router = Router();
 
 router.post('/', auth("user"), createInventory);
 router.get('/', listInventories);
-router.get('/my', auth("user"), myListInventories);
+router.get('/me', auth("user"), myListInventories);
 router.get('/internal/:id', auth("user"), getInventoryById);
 router.get('/external/:id', getInventoryByIdExternal);
 router.patch('/:id', auth("user"), updateInventory);
 router.delete('/:id', auth("user"), deleteInventory);
+router.post('/:inventoryId/items', auth("user"), createItem);
+router.get('/:inventoryId/items', getItems);
 
 router.get('/:id/messages', async (req, res) => {
   const { id } = req.params;

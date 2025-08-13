@@ -79,85 +79,86 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
   }, [form.watch, setInventory]);
 
   return (
-    <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min">
+    <div className="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min">
       <Form {...form}>
-        <form className={"flex flex-col gap-6 p-10"}
-        >
+        <form className="flex flex-col gap-6 p-4 sm:p-6 md:p-10">
           <div className="grid grid-cols-1 md:grid-cols-[150px_1fr] gap-6 items-start">
             <AvatarWithUpload
               form={form}
-              urlPath={'imageUrl'}
+              urlPath="imageUrl"
               handleImageUpload={handleImageUpload}
               uploading={uploading}
             />
-          <div className="flex flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Inventory title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-col gap-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Inventory title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <FormControl>
-                    <Select
-                      {...field}
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Category</FormLabel>
+                    <FormControl>
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Categories</SelectLabel>
+                            <SelectItem value="furniture">Furniture</SelectItem>
+                            <SelectItem value="test">Furniture2</SelectItem>
+                            <SelectItem value="test2">Furniture3</SelectItem>
+                            <SelectItem value="test2">Furniture4</SelectItem>
+                            <SelectItem value="test4">Furniture5</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                      value={field.value}
-                      onValueChange={field.onChange}
+              <FormField
+                control={form.control}
+                name="isPublic"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        id="isPublic"
+                      />
+                    </FormControl>
+                    <FormLabel
+                      htmlFor="isPublic"
+                      className="cursor-pointer text-sm sm:text-base"
                     >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Categories</SelectLabel>
-                        <SelectItem value="furniture">Furniture</SelectItem>
-                        <SelectItem value="test">Furniture2</SelectItem>
-                        <SelectItem value="test2">Furniture3</SelectItem>
-                        <SelectItem value="test2">Furniture4</SelectItem>
-                        <SelectItem value="test4">Furniture5</SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="isPublic"
-              render={({ field }) => (
-                <FormItem className="flex items-center space-x-2">
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id="isPublic"
-                    />
-                  </FormControl>
-                  <FormLabel htmlFor="isPublic" className="cursor-pointer">
-                    Public (any authenticated user can add items)
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
+                      Public (any authenticated user can add items)
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
-        </div>
 
           <div className="grid gap-3">
             <FormField
@@ -175,8 +176,7 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
                         onChange={(e) => field.onChange(e.target.value)}
                         className="resize-none font-mono"
                       />
-
-                      <div className="prose prose-sm prose-stone dark:prose-invert max-w-none p-4 border rounded-md bg-muted/30 overflow-y-auto">
+                      <div className="prose prose-sm prose-stone dark:prose-invert max-w-none p-4 border rounded-md bg-muted/30 overflow-y-auto min-h-[200px]">
                         {field.value ? (
                           <ReactMarkdown rehypePlugins={[rehypeSanitize]}>
                             {field.value}
@@ -197,5 +197,5 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
         </form>
       </Form>
     </div>
-  )
+  );
 }

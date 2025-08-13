@@ -5,6 +5,7 @@ import axios from "axios";
 import { toast } from "sonner";
 import type { InventorySettingSchema } from "@/lib/inventory";
 import type { ProfileSchema } from "@/lib/auth";
+import type { Item } from "@/components/table/ItemColumns";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -149,10 +150,20 @@ export async function fetchInventories(): Promise<Inventory[]> {
   }
 }
 
-export async function fetchMyInventories(): Promise<Inventory[]> {
+export async function fetchItems(inventoryId: string): Promise<Item[]> {
+  try {
+    const { data } = await axios.get<Item[]>(`${apiUrl}/api/v1/inventories/${inventoryId}/items`);
+    return data;
+  } catch (error) {
+    console.error("Error loading inventories:", error);
+    throw new Error("Loading error");
+  }
+}
+
+export async function fetchMyInventories(type: string): Promise<Inventory[]> {
   try {
     const user = useAuthStore.getState().user;
-    const { data } = await axios.get<Inventory[]>(`${apiUrl}/api/v1/inventories/my`,{
+    const { data } = await axios.get<Inventory[]>(`${apiUrl}/api/v1/inventories/me?type=${type}`,{
       headers: {
         Authorization: `Bearer ${user?.token}`,
         "Content-Type": "application/json",
@@ -185,6 +196,16 @@ export async function fetchInventoryById(id: string): Promise<Inventory> {
     return data;
   } catch (error) {
     console.error("Error loading inventory:", error);
+    throw new Error("Loading error");
+  }
+}
+
+export async function fetchItemById(id: string): Promise<Item> {
+  try {
+    const { data } = await axios.get<Item>(`${apiUrl}/api/v1/items/${id}`);
+    return data;
+  } catch (error) {
+    console.error("Error loading item:", error);
     throw new Error("Loading error");
   }
 }
@@ -230,4 +251,46 @@ export async function createInventory(payload: InventorySettingSchema): Promise<
     console.error("Error creating inventories:", error);
     throw new Error("Loading error");
   }
+}
+
+export async function createItem(payload: any, inventoryId: string): Promise<Inventory> {
+  try {
+    const user = useAuthStore.getState().user;
+    const { data } = await axios.post<Inventory>(`${apiUrl}/api/v1/inventories/${inventoryId}/items`,
+      payload,
+      {
+      headers: {
+        Authorization: `Bearer ${user?.token}`,
+        "Content-Type": "application/json",
+      },
+    }
+    );
+    return data;
+  } catch (error) {
+    console.error("Error creating item:", error);
+    throw new Error("Loading error");
+  }
+}
+
+export async function updateItem(id: string, payload: any) {
+  try{
+    const user = useAuthStore.getState().user;
+    const { data } = await axios.patch<Item>(`${apiUrl}/api/v1/items/${id}`,
+      payload,
+      {
+      headers: {
+        Authorization: `Bearer ${user?.token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return data;
+  } catch (error) {
+    console.error("Error updating item:", error);
+    throw new Error("Loading error");
+  }
+}
+
+export async function loadDashboard() {
+  const { data } = await axios.get(`${apiUrl}/api/v1/dashboard`)
+  return data
 }

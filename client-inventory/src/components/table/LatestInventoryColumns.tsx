@@ -76,8 +76,7 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
         </Button>
       ),
       cell: ({ row }) => {
-        const { title, imageUrl, createdAt } = row.original
-        const createdDate = new Date(createdAt)
+        const { title, imageUrl } = row.original
 
         return (
           <div className="text-right font-medium flex gap-3">
@@ -87,32 +86,7 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{title}</span>
-              <span className="truncate text-xs text-muted-foreground">
-                {t('inventory.createdAt')}: {createdDate.toLocaleDateString()}
-              </span>
             </div>
-          </div>
-        )
-      },
-    },
-    {
-      accessorKey: "category",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          className=""
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          {t('inventory.category')}
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => {
-        const { category } = row.original
-
-        return (
-          <div className="text-left font-medium flex gap-3">
-            {t(`inventory.${category}`)}
           </div>
         )
       },

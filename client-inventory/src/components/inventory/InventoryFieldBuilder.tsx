@@ -61,7 +61,7 @@ export function InventoryFieldBuilder({
 
   function addField() {
     const newField: CustomField = {
-      id: crypto.randomUUID(),
+      id: "",
       label: "",
       type: "single_line_text",
       description: "",
@@ -164,57 +164,61 @@ function SortableField({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex gap-3 items-center">
-
-      <div
-        className="cursor-move p-2"
-        aria-label="Drag handle"
-        {...attributes}
-        {...listeners}
-      >
-        <GripHorizontal/>
-      </div>
-
-      <Input
-        placeholder="Field label"
-        value={field.label}
-        onChange={(e) => updateField(field.id, { label: e.target.value })}
-        className="flex-grow"
-      />
-
-      <Input
-        placeholder="Field Description"
-        value={field.description}
-        onChange={(e) => updateField(field.id, { description: e.target.value })}
-        className="flex-grow"
-      />
-
-      <Select
-        value={field.type}
-        onValueChange={(value) => updateField(field.id, { type: value as FieldType })}
-      >
-        <SelectTrigger className="w-[350px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Field Type</SelectLabel>
-            <SelectItem value="single_line_text">Text</SelectItem>
-            <SelectItem value="number">Number</SelectItem>
-            <SelectItem value="link">Link</SelectItem>
-            <SelectItem value="multi_line_text">Multi line Text</SelectItem>
-            <SelectItem value="boolean">Checkbox</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-
-      <div className="shrink-0 space-x-2">
-        <Switch
-          checked={field.showInTable}
-          onCheckedChange={(value) => updateField(field.id, { showInTable: value })}
-        />
-        <Label htmlFor="airplane-mode">Show in Table</Label>
-      </div>
+  <div
+    ref={setNodeRef}
+    style={style}
+    className="flex flex-col sm:flex-row gap-3 items-start sm:items-center w-full"
+  >
+    <div
+      className="cursor-move p-2"
+      aria-label="Drag handle"
+      {...attributes}
+      {...listeners}
+    >
+      <GripHorizontal />
     </div>
-  );
+
+    <Input
+      placeholder="Field label"
+      value={field.label}
+      onChange={(e) => updateField(field.id, { label: e.target.value })}
+      className="w-full sm:flex-grow"
+    />
+
+    <Input
+      placeholder="Field Description"
+      value={field.description}
+      onChange={(e) => updateField(field.id, { description: e.target.value })}
+      className="w-full sm:flex-grow"
+    />
+
+    <Select
+      value={field.type}
+      onValueChange={(value) => updateField(field.id, { type: value as FieldType })}
+    >
+      <SelectTrigger className="w-full sm:w-[450px]">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Field Type</SelectLabel>
+          <SelectItem value="single_line_text">Text</SelectItem>
+          <SelectItem value="number">Number</SelectItem>
+          <SelectItem value="link">Link</SelectItem>
+          <SelectItem value="multi_line_text">Multi line Text</SelectItem>
+          <SelectItem value="boolean">Checkbox</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+
+    <div className="flex items-center gap-2 shrink-0">
+      <Switch
+        checked={field.showInTable}
+        onCheckedChange={(value) => updateField(field.id, { showInTable: value })}
+      />
+      <Label htmlFor="airplane-mode">Show in Table</Label>
+    </div>
+  </div>
+);
+
 }

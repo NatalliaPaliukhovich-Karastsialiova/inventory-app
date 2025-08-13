@@ -9,6 +9,7 @@ import { fetchInventories } from "@/services/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Plus } from "lucide-react";
 
 export default function InventoriesPage() {
   const [data, setData] = useState<Inventory[]>([])
@@ -44,20 +45,20 @@ export default function InventoriesPage() {
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">{t("inventories")}</h2>
         </div>
-        <div className="flex flex-wrap justify-between gap-2">
+        <div className="flex justify-between gap-2">
           <Input
             placeholder={t("inventory.searchPlaceholder")}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-sm"
+            className="max-w-sm h-10"
           />
           {user && (
             <Button
               variant="outline"
-              size="sm"
+              size="lg"
               onClick={() => navigate(`/inventories/new`)}
             >
-              {t("inventory.create")}
+              <Plus className="w-4 h-4" />
             </Button>
           )}
         </div>

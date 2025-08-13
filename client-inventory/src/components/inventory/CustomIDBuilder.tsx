@@ -164,7 +164,11 @@ function SortableField({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="flex gap-3 items-center">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex flex-col sm:flex-row gap-3 items-start sm:items-center w-full"
+    >
       <div
         className="cursor-move p-2"
         aria-label="Drag handle"
@@ -180,7 +184,7 @@ function SortableField({
           updateField(field.id, { type: value as CustomIdType })
         }
       >
-        <SelectTrigger className="w-[450px]">
+        <SelectTrigger className="w-full sm:w-[250px]">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -201,14 +205,14 @@ function SortableField({
         placeholder="Field Mask"
         value={field.value}
         onChange={(e) => updateField(field.id, { value: e.target.value })}
-        className="flex-grow"
+        className="w-full sm:flex-grow"
       />
 
       <Input
         placeholder="Separator"
         value={field.separator}
         onChange={(e) => updateField(field.id, { separator: e.target.value })}
-        className="flex-grow"
+        className="w-full sm:flex-grow"
       />
     </div>
   );

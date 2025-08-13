@@ -86,6 +86,7 @@ model Inventory {
   customIdElements CustomIdElement[]
   inventoryField InventoryField[]
   inventoryMessage InventoryMessage []
+  item Item[]
 
   @@index([title])
   @@index([category])
@@ -124,6 +125,7 @@ model InventoryField {
   type        FieldType
   orderIndex  Int
   showInTable Boolean   @default(false)
+  itemFieldValues ItemFieldValue[]
 }
 
 enum FieldType {
@@ -157,6 +159,30 @@ enum IdSeqType {
   rand20
   rand32
 }
+
+model Item {
+  id          String     @id @default(uuid())
+  inventoryId String
+  inventory   Inventory  @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  fieldValues ItemFieldValue[]
+}
+
+model ItemFieldValue {
+  id         String        @id @default(uuid())
+  itemId     String
+  item       Item          @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  fieldId    String
+  field      InventoryField @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  value      String
+  @@unique([itemId, fieldId])
+}
+
 
 model InventoryMessage {
   id          String    @id @default(uuid())

@@ -27,12 +27,6 @@ const data = {
       access: 'user'
     },
     {
-      title: "templates",
-      url: "/",
-      icon: Bot,
-      access: 'user'
-    },
-    {
       title: "inventories",
       url: "/inventories",
       icon: BookOpen,

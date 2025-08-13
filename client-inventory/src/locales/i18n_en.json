@@ -74,5 +74,25 @@
     "book": "Books",
     "other": "Other",
     "searchPlaceholder": "Search by title"
+  },
+  "dashboard": {
+    "totalInventories": {
+    "title": "Total Inventories",
+    "subtitle": "Growing steadily this year",
+    "description": "All inventories currently in the system"
+    },
+    "inventoriesLastDay": {
+      "title": "Inventories (Last 24h)",
+      "badge": "New",
+      "subtitle": "Fresh activity detected",
+      "description": "New inventories created in the past day"
+    },
+    "totalUsers": {
+      "title": "Total Users",
+      "subtitle": "Community is expanding",
+      "description": "Registered members of the platform"
+    },
+    "latestInventories": "Latest Inventories",
+    "topInventories": "Top Inventories"
   }
 }

@@ -86,76 +86,79 @@ export default function UserAccessTable({
   const columns = getColumns(t)
 
   return (
-    <div className="space-y-4">
-      <div className="relative w-full">
-        <div className='flex justify-between'>
-          <Input
-            placeholder="Input name or email"
-            className='max-w-sm'
-            value={query}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setShowSuggestions(true);
-            }}
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={removeSelectedUsers}
-            disabled={selectedIds.length === 0}
-          >
-            <Trash />
-            Delete
-          </Button>
-        </div>
-        {showSuggestions && query && (
-          <ul
-            ref={listRef}
-            className="absolute z-10 w-full bg-muted border rounded mt-1 shadow max-h-60 overflow-auto">
-            {loading ? (
-              <li className="px-3 py-2 text-gray-500">Loading...</li>
-            ) : suggestions.length > 0 ? (
-              suggestions
-                .filter((s) => !users.some((u) => u.userId === s.id))
-                .map((u) => (
-                  <li
-                    key={u.id}
-                    className="px-3 py-2 hover:bg-muted/50 cursor-pointer flex gap-3"
-                    onClick={() => addUser(u)}
-                  >
+  <div className="space-y-4 w-full">
+    <div className="relative w-full">
+      <div className="flex flex-col sm:flex-row justify-between gap-2">
+        <Input
+          placeholder="Input name or email"
+          className="w-full sm:max-w-sm"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setShowSuggestions(true);
+          }}
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={removeSelectedUsers}
+          disabled={selectedIds.length === 0}
+          className="flex items-center gap-1 w-full sm:w-auto justify-center"
+        >
+          <Trash />
+          Delete
+        </Button>
+      </div>
+      {showSuggestions && query && (
+        <ul
+          ref={listRef}
+          className="absolute z-10 w-full bg-muted border rounded mt-1 shadow max-h-60 overflow-auto"
+        >
+          {loading ? (
+            <li className="px-3 py-2 text-gray-500">Loading...</li>
+          ) : suggestions.length > 0 ? (
+            suggestions
+              .filter((s) => !users.some((u) => u.userId === s.id))
+              .map((u) => (
+                <li
+                  key={u.id}
+                  className="px-3 py-2 hover:bg-muted/50 cursor-pointer flex gap-3"
+                  onClick={() => addUser(u)}
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarImage
                       src={u.avatar}
                       alt={u.fullName}
-                      className="rounded-lg object-cover"
+                      className="h-8 w-8 rounded-lg object-cover"
                     />
-                    <AvatarFallback className="w-full h-full rounded-lg bg-muted flex items-center justify-center text-xs">
+                    <AvatarFallback className="h-8 w-8 rounded-lg bg-muted flex items-center justify-center text-xs">
                       {u.fullName
                         ? u.fullName.charAt(0).toUpperCase()
                         : "?"}
                     </AvatarFallback>
                   </Avatar>
 
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{u.fullName}</span>
-                  <span className="truncate font-light">{u.email}</span>
-                </div>
-                  </li>
-                ))
-            ) : (
-              <li className="px-3 py-2 text-muted">Users not found</li>
-            )}
-          </ul>
-        )}
-      </div>
-
-      <DataTable
-        columns={columns}
-        data={users}
-        showPagination={false}
-        getRowId={(row) => row.userId}
-        onSelectionChange={setSelectedIds}
-      />
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-medium">{u.fullName}</span>
+                    <span className="truncate font-light">{u.email}</span>
+                  </div>
+                </li>
+              ))
+          ) : (
+            <li className="px-3 py-2 text-muted">Users not found</li>
+          )}
+        </ul>
+      )}
     </div>
-  );
+
+    <DataTable
+      columns={columns}
+      data={users}
+      showPagination={false}
+      getRowId={(row) => row.userId}
+      onSelectionChange={setSelectedIds}
+    />
+  </div>
+);
+
 }

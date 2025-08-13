@@ -166,18 +166,48 @@ export async function updateInventory(req, res) {
     }
 
     if (Array.isArray(inventoryField)) {
-      await prisma.inventoryField.deleteMany({ where: { inventoryId: id } });
-      await prisma.inventoryField.createMany({
-        data: inventoryField.map((el, index) => ({
-          inventoryId: id,
-          orderIndex: index,
-          type: el.type,
-          description: el.description || '',
-          label: el.label || '',
-          showInTable: el.showInTable || false
-        })),
-        skipDuplicates: true,
+      const existingFields = await prisma.inventoryField.findMany({
+        where: { inventoryId: id },
+        select: { id: true }
       });
+
+      const newFieldIds = inventoryField.map(f => f.id).filter(Boolean);
+      const fieldsToDelete = existingFields
+        .filter(f => !newFieldIds.includes(f.id))
+        .map(f => f.id);
+
+      if (fieldsToDelete.length > 0) {
+        await prisma.inventoryField.deleteMany({
+          where: { id: { in: fieldsToDelete } }
+        });
+      }
+
+      for (let i = 0; i < inventoryField.length; i++) {
+        const field = inventoryField[i];
+        if (field.id) {
+          await prisma.inventoryField.update({
+            where: { id: field.id },
+            data: {
+              label: field.label ?? '',
+              description: field.description ?? '',
+              type: field.type,
+              showInTable: field.showInTable ?? false,
+              orderIndex: i
+            }
+          });
+        } else {
+          await prisma.inventoryField.create({
+            data: {
+              inventoryId: id,
+              label: field.label ?? '',
+              description: field.description ?? '',
+              type: field.type,
+              showInTable: field.showInTable ?? false,
+              orderIndex: i
+            }
+          });
+        }
+      }
     }
 
     const result = await prisma.inventory.findUnique({
@@ -232,12 +262,22 @@ export async function listInventories(req, res) {
 
 export async function myListInventories(req, res) {
   try {
-    const userId = req.user.id;
+    const {type = 'own'} = req.query;
+
+    const where = {};
+
+    if (type === 'own') {
+      where.ownerId = req.user.id;
+    } else if (type === 'write') {
+      where.ownerId = { not: req.user.id };
+      where.OR = [
+        { isPublic: true },
+        { accessList: { some: { userId: req.user.id } } }
+      ];
+    }
 
     const inventories = await prisma.inventory.findMany({
-      where: {
-        ownerId: userId,
-      },
+      where,
       include: {
         owner: true,
       },
@@ -250,3 +290,78 @@ export async function myListInventories(req, res) {
     res.status(500).json({ error: 'Failed to fetch inventories' });
   }
 }
+
+export async function createItem(req, res) {
+    const { inventoryId } = req.params;
+    const { fieldValues } = req.body;
+
+    const inventory = await prisma.inventory.findUnique({
+      where: { id: inventoryId },
+      include: {
+        accessList: { where: { userId: req.user.id } }
+      }
+    });
+
+    if (!inventory) {
+      return res.status(404).json({ error: 'Inventory not found' });
+    }
+
+    const canWrite =
+      inventory.ownerId === req.user.id ||
+      inventory.accessList.some(a => a.userId === req.user.id);
+    if (!canWrite) {
+      return res.status(403).json({ error: 'No write access' });
+    }
+
+    const fieldIds = fieldValues.map(f => f.fieldId);
+    const inventoryFields = await prisma.inventoryField.findMany({
+      where: { inventoryId, id: { in: fieldIds } }
+    });
+    if (inventoryFields.length !== fieldValues.length) {
+      return res.status(400).json({ error: 'Invalid fields' });
+    }
+
+    const item = await prisma.item.create({
+      data: {
+        inventoryId,
+        fieldValues: {
+          create: fieldValues.map(f => ({
+            fieldId: f.fieldId,
+            value: f.value
+          }))
+        }
+      },
+      include: {
+        fieldValues: {
+          include: { field: true }
+        }
+      }
+    });
+
+    res.status(201).json(item);
+  }
+
+export const getItems = async (req, res) => {
+  try {
+    const { inventoryId } = req.params;
+
+    if (!inventoryId) {
+      return res.status(400).json({ message: "inventoryId is required" });
+    }
+    const items = await prisma.item.findMany({
+      where: { inventoryId },
+      include: {
+        fieldValues: {
+          include: {
+            field: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json(items);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+};
