@@ -5,7 +5,7 @@ export const createInventoryMessage = async ({ inventoryId, userId, text }) => {
     data: {
       inventoryId,
       userId,
-      text,
+      text
     },
     include: {
       user: {
@@ -13,19 +13,23 @@ export const createInventoryMessage = async ({ inventoryId, userId, text }) => {
           id: true,
           fullName: true,
           email: true,
-          avatar: true,
-        },
-      },
-    },
+          avatar: true
+        }
+      }
+    }
   });
 
   return message;
 };
 
-export const getInventoryMessages = async (inventoryId, limit = 50, cursor = null) => {
+export const getInventoryMessages = async (
+  inventoryId,
+  limit = 50,
+  cursor = null
+) => {
   return await prisma.inventoryMessage.findMany({
     where: { inventoryId },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: limit,
     skip: cursor ? 1 : 0,
     cursor: cursor ? { id: cursor } : undefined,
@@ -35,9 +39,26 @@ export const getInventoryMessages = async (inventoryId, limit = 50, cursor = nul
           id: true,
           fullName: true,
           email: true,
-          avatar: true,
-        },
-      },
-    },
+          avatar: true
+        }
+      }
+    }
   });
 };
+
+export async function loadMessages(req, res) {
+  const { id } = req.params;
+  const { limit, cursor } = req.query;
+
+  try {
+    const messages = await getInventoryMessages(
+      id,
+      parseInt(limit) || 50,
+      cursor || null
+    );
+    res.json(messages);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "CHAT_FAILED_LOAD_MESSAGES" });
+  }
+}

@@ -38,7 +38,7 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("sidebar.platform")}</SidebarGroupLabel>
       <SidebarMenu>
         {filteredItems.map((item) => (
           <SidebarMenuItem key={item.title}>

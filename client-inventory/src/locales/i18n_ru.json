@@ -67,11 +67,18 @@
     "title": "Название",
     "category": "Категория",
     "owner": "Владелец",
-    "equipment": "Оборудование",
-    "furniture": "Мебель",
-    "book": "Книга",
-    "other": "Другое",
-    "searchPlaceholder": "Поиск по названию"
+    "searchPlaceholder": "Поиск по названию",
+    "settings": {
+      "title": "Название",
+      "inventoryTitlePlaceholder": "Название инвентаря",
+      "category": "Категория",
+      "selectCategoryPlaceholder": "Выберите категорию",
+      "categories": "Категории",
+      "public": "Публичный (любой аутентифицированный пользователь может добавлять предметы)",
+      "descriptionMarkdown": "Описание (Markdown)",
+      "writeDescriptionPlaceholder": "Напишите описание в Markdown...",
+      "livePreview": "Предварительный просмотр появится здесь..."
+    }
   },
   "dashboard": {
     "totalInventories": {
@@ -90,7 +97,186 @@
       "subtitle": "Сообщество растёт",
       "description": "Зарегистрированные участники платформы"
     }
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Ошибка:",
+    "noSelection": "Ничего не выбрано.",
+    "actionError": "Ошибка при выполнении действия.",
+    "profileUpdated": "Профиль обновлен!",
+    "save": "Сохранить"
+  },
+  "homePage": {
+    "failedToLoadStats": "Не удалось загрузить статистику"
+  },
+  "chat": {
+    "sendMessage": "Отправить сообщение",
+    "typeYourMessage": "Введите ваше сообщение..."
+  },
+  "inventoryDetails": {
+    "newInventory": "Новый инвентарь",
+    "noDescriptionProvided": "Описание отсутствует.",
+    "addNewItem": "Добавить новый предмет",
+    "deleteInventory": "Удалить инвентарь",
+    "confirmDeletion": "Подтвердить удаление",
+    "deleteInventoryConfirmation": "Вы уверены, что хотите удалить этот инвентарь? Это действие нельзя отменить.",
+    "cancel": "Отмена",
+    "editInventory": "Редактировать инвентарь",
+    "newCustomField": "Новое пользовательское поле",
+    "customIDBuilder": "Конструктор пользовательских идентификаторов",
+    "addCustomField": "Добавить пользовательское поле",
+    "fieldLabel": "Метка поля",
+    "selectAType": "Выберите тип",
+    "singleLineText": "Однострочный текст",
+    "multiLineText": "Многострочный текст",
+    "number": "Число",
+    "boolean": "Логический",
+    "linkFileUpload": "Ссылка (загрузка файла)",
+    "fieldDescriptionTooltip": "Описание поля (подсказка)",
+    "isRequired": "Обязательно?",
+    "isUnique": "Уникально?",
+    "saveField": "Сохранить поле",
+    "editField": "Редактировать поле",
+    "deleteField": "Удалить поле",
+    "deleteFieldConfirmation": "Вы уверены, что хотите удалить это поле? Это действие нельзя отменить, и все данные предметов, связанные с этим полем, будут потеряны.",
+    "fieldBuilder": "Конструктор полей",
+    "accessControl": "Управление доступом",
+    "chat": "Чат",
+    "settings": "Настройки",
+    "items": "Предметы",
+    "description": "Описание",
+    "details": "Детали",
+    "failedToLoadInventory": "Не удалось загрузить инвентарь",
+    "inventoryUpdated": "Инвентарь обновлен",
+    "inventoryCreated": "Инвентарь создан",
+    "failedToSaveInventory": "Не удалось сохранить инвентарь",
+    "discussion": "Обсуждение",
+    "customID": "Пользовательский ID",
+    "fields": "Поля",
+    "access": "Доступ",
+    "statistics": "Статистика"
+  },
+  "columns": {
+    "count": "Количество"
+  },
+  "profilePage": {
+    "myInventories": "Мои инвентари",
+    "inventoriesCanWriteTo": "Инвентари, в которые я могу писать",
+    "own": "Мои",
+    "access": "Доступ"
+  },
+  "pieChart": {
+    "noDataAvailable": "Нет данных",
+    "totalItems": "Всего предметов",
+    "inventories": "Инвентарь",
+    "last24h": "Последние 24 часа",
+    "older": "Старые",
+    "inventoriesDistribution": "Распределение инвентаря",
+    "last24hVsOlder": "Последние 24 часа против старых инвентарей",
+    "showingShare": "Показана доля инвентаря, созданного за последний день"
+  },
+  "sectionCards": {
+    "inventoriesLastDay": "Инвентари за последний день"
+  },
+  "dataTable": {
+    "noResults": "Нет результатов."
+  },
+  "table": {
+    "columns": {
+      "userAccess": {
+        "selectAll": "Выбрать все",
+        "selectRow": "Выбрать строку"
+      }
+    }
+  },
+  "pagination": {
+    "of": "из",
+    "rowsSelected": "выбранных строк.",
+    "rowsPerPage": "Строк на страницу",
+    "page": "Страница",
+    "goToFirstPage": "Перейти на первую страницу",
+    "goToPreviousPage": "Перейти на предыдущую страницу",
+    "goToNextPage": "Перейти на следующую страницу",
+    "goToLastPage": "Перейти на последнюю страницу"
+  },
+  "profile": {
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "email": "Электронная почта",
+    "role": "Роль",
+    "account": "Аккаунт"
+  },
+  "errorCodes": {
+    "AUTH_MISSING_CREDENTIALS": "Требуется Email и пароль!",
+    "AUTH_EMAIL_ALREADY_IN_USE": "Email уже используется.",
+    "AUTH_CREATE_USER_ERROR": "Ошибка создания пользователя.",
+    "AUTH_USER_NOT_FOUND": "Пользователь не существует.",
+    "AUTH_USER_BLOCKED": "Пользователь заблокирован.",
+    "AUTH_USER_NOT_REGISTERED_WITH_EMAIL_PASSWORD": "Пользователь не зарегистрирован с помощью Email и пароля.",
+    "AUTH_INVALID_CREDENTIALS": "Неверный Email или пароль.",
+    "AUTH_TOKEN_GENERATION_ERROR": "Ошибка генерации токена.",
+    "AUTH_UNAUTHORIZED": "Не авторизован.",
+    "AUTH_AUTHORIZATION_REQUIRED": "Требуется авторизация.",
+    "AUTH_ACCESS_FORBIDDEN": "Доступ запрещен.",
+    "AUTH_INVALID_TOKEN": "Неверный токен.",
+    "COMMON_SERVER_ERROR": "Ошибка сервера.",
+    "ADMIN_IDS_ARRAY_REQUIRED": "Требуется массив ID.",
+    "ADMIN_ACTION_REQUIRED": "Требуется действие.",
+    "ADMIN_UNKNOWN_ACTION": "Неизвестное действие.",
+    "ADMIN_USERS_DELETED_SUCCESS": "Пользователи успешно удалены.",
+    "ADMIN_ACTION_APPLIED_SUCCESS": "Действие успешно применено.",
+    "INVENTORY_FAILED_CREATE": "Не удалось создать инвентарь.",
+    "INVENTORY_NOT_FOUND": "Инвентарь не найден.",
+    "INVENTORY_FAILED_FETCH": "Не удалось получить инвентарь.",
+    "INVENTORY_FAILED_UPDATE": "Не удалось обновить инвентарь.",
+    "INVENTORY_DELETED_SUCCESS": "Инвентарь успешно удален.",
+    "INVENTORY_FAILED_DELETE": "Не удалось удалить инвентарь.",
+    "INVENTORY_NO_WRITE_ACCESS": "Нет доступа на запись.",
+    "INVENTORY_INVALID_FIELDS": "Неверные поля.",
+    "ITEM_INVENTORY_ID_REQUIRED": "Требуется ID инвентаря.",
+    "CHAT_FAILED_LOAD_MESSAGES": "Не удалось загрузить сообщения.",
+    "ITEM_NOT_FOUND": "Предмет не найден.",
+    "ITEM_FAILED_FETCH": "Не удалось получить предмет.",
+    "ITEM_FAILED_UPDATE": "Не удалось обновить предмет.",
+    "PROFILE_FAILED_UPDATE": "Не удалось обновить профиль."
+  },
+  "itemForm": {
+    "uploadFailed": "Загрузка не удалась",
+    "itemUpdatedSuccessfully": "Элемент успешно обновлен!",
+    "itemCreatedSuccessfully": "Элемент успешно создан!",
+    "failedToCreateItem": "Не удалось создать элемент",
+    "uploading": "Загрузка..."
+  },
+  "userAccessTable": {
+    "inputPlaceholder": "Введите имя или email",
+    "usersNotFound": "Пользователи не найдены"
+  },
+  "sidebar": {
+    "platform": "Платформа"
+  },
+  "codelists": {
+    "categories": {
+      "equipment": "Оборудование",
+      "furniture": "Мебель",
+      "book": "Книга",
+      "other": "Другое"
+    },
+    "fieldTypes": {
+      "single_line_text": "Однострочный текст",
+      "multi_line_text": "Многострочный текст",
+      "number": "Число",
+      "link": "Ссылка",
+      "boolean": "Индикатор"
+    },
+    "idSeqTypes": {
+      "fixed": "Фиксированное значение",
+      "guid": "GUID",
+      "date": "Дата",
+      "seq": "Последовательность",
+      "rand6": "6 случайных цифр",
+      "rand9": "9 случайных цифр",
+      "rand20": "20 случайных бит",
+      "rand32": "32 случайных бита"
+    }
   }
-
-
 }

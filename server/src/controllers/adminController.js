@@ -1,8 +1,13 @@
-import prisma from "../config/db.js";
+import {batchDeleteUsers, readAllUsers, batchUpdateUsers} from "../models/userModel.js";
 
 export const getAllUsers = async (req, res) => {
-  const users = await prisma.user.findMany();
-  return res.json(users);
+  try {
+    const users = await readAllUsers();
+    res.json(users);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "COMMON_SERVER_ERROR" });
+  }
 }
 
 export const batchUsers = async (req, res) => {
@@ -10,46 +15,33 @@ export const batchUsers = async (req, res) => {
     const { ids, action } = req.body;
 
     if (!Array.isArray(ids) || !ids.length) {
-      return res.status(400).json({ error: "IDs array required" });
+      return res.status(400).json({ error: "ADMIN_IDS_ARRAY_REQUIRED" });
     }
     if (!action) {
-      return res.status(400).json({ error: "Action is required" });
+      return res.status(400).json({ error: "ADMIN_ACTION_REQUIRED" });
     }
 
-    let update;
-    switch (action) {
-      case "block":
-        update = { status: "blocked" };
-        break;
-      case "unblock":
-        update = { status: "active" };
-        break;
-      case "make-admin":
-        update = { role: "admin" };
-        break;
-      case "remove-admin":
-        update = { role: "user" };
-        break;
-      case "delete":
-        await prisma.user.deleteMany({
-          where: {
-            id: { in: ids },
-          }
-        });
-        return res.json({ message: "Users deleted" });
-      default:
-        return res.status(400).json({ error: "Unknown action" });
+    if (action === "delete") {
+      await batchDeleteUsers(ids);
+      return res.json({ message: "ADMIN_USERS_DELETED_SUCCESS" });
     }
 
-    await prisma.user.updateMany({
-      where: {
-        id: { in: ids },
-      },
-      data: update,
-    });
-    res.json({ message: `Action '${action}' applied` });
+    const actionMap = {
+      "block": { status: "blocked" },
+      "unblock": { status: "active" },
+      "make-admin": { role: "admin" },
+      "remove-admin": { role: "user" }
+    };
+
+    const updateData = actionMap[action];
+    if (!updateData) {
+      return res.status(400).json({ error: "ADMIN_UNKNOWN_ACTION" });
+    }
+
+    await batchUpdateUsers(ids, updateData);
+    res.json({ message: "ADMIN_ACTION_APPLIED_SUCCESS" });
   } catch (e) {
     console.log(e)
-    res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "COMMON_SERVER_ERROR" });
   }
 };

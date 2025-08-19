@@ -57,9 +57,9 @@ export function ProfileSettings() {
   async function handleSave(data: ProfileSchema) {
     try{
       await updateProfile(data)
-      toast.success("Profile updated!")
+      toast.success(t("common.profileUpdated"))
     }catch(e) {
-      toast.error("Error")
+      toast.error(t("common.error"))
     }
   }
 
@@ -82,9 +82,9 @@ export function ProfileSettings() {
               name="givenName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel>{t("profile.firstName")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="First Name" {...field} />
+                    <Input placeholder={t("profile.firstName")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -95,9 +95,9 @@ export function ProfileSettings() {
               name="familyName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel>{t("profile.lastName")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Last Name" {...field} />
+                    <Input placeholder={t("profile.lastName")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,7 +108,7 @@ export function ProfileSettings() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t("profile.email")}</FormLabel>
                   <FormControl>
                     <Input readOnly {...field} className="pointer-events-none"/>
                   </FormControl>
@@ -121,7 +121,7 @@ export function ProfileSettings() {
               name="role"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Role</FormLabel>
+                  <FormLabel>{t("profile.role")}</FormLabel>
                   <FormControl>
                     <Input readOnly {...field} className="pointer-events-none"/>
                   </FormControl>
@@ -129,7 +129,7 @@ export function ProfileSettings() {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={uploading}>Save</Button>
+            <Button type="submit" disabled={uploading}>{t("common.save")}</Button>
           </div>
         </div>
         </form>

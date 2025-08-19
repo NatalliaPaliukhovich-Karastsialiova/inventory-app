@@ -28,7 +28,7 @@ export default function AdminPage() {
         const result = await fetchUsers()
         setData(result)
       } catch (error) {
-        toast.error("Error:")
+        toast.error(t("common.error"))
       }
     }
     getData()
@@ -45,7 +45,7 @@ export default function AdminPage() {
   const handleAction = async (type: string) => {
     try {
       if (selectedUsers.length === 0) {
-        alert(t("noSelection"));
+        alert(t("common.noSelection"));
         return;
       }
       await processUsersBatch(selectedUsers, type);
@@ -59,7 +59,7 @@ export default function AdminPage() {
         }
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.error || t("actionError"));
+      toast.error(error?.response?.data?.error || t("common.actionError"));
     }
   };
 

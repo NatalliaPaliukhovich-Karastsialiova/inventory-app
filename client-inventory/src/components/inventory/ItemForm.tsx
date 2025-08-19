@@ -24,6 +24,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { createItem, updateItem } from "@/services/api";
 import type { Item } from "../table/ItemColumns";
+import { useTranslation } from "react-i18next";
 
 interface ItemFormProps {
   templateFields?: CustomField[];
@@ -59,6 +60,7 @@ const generateSchema = (fields: CustomField[]) => {
 
 export function ItemForm({ templateFields = [], inventoryId, readOnly, item, setItem }: ItemFormProps) {
   const [uploading, setUploading] = useState(false);
+  const { t } = useTranslation();
 
   const FormSchema = generateSchema(templateFields);
 
@@ -100,7 +102,7 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
       const data = await res.json();
       return data.secure_url || null;
     } catch (e) {
-      console.error("Upload failed", e);
+      console.error(t("itemForm.uploadFailed"), e);
       return null;
     } finally {
       setUploading(false);
@@ -117,16 +119,16 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
       if (item) {
         const res = await updateItem(item.id, { fieldValues });
         setItem(res);
-        toast.success("Item updated successfully!");
+        toast.success(t("itemForm.itemUpdatedSuccessfully"));
       } else {
         await createItem({ inventoryId, fieldValues }, inventoryId);
-        toast.success("Item created successfully!");
+        toast.success(t("itemForm.itemCreatedSuccessfully"));
         form.reset();
       }
       form.reset();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create item");
+      toast.error(t("itemForm.failedToCreateItem"));
     }
   }
 
@@ -203,7 +205,7 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
 
         {!readOnly && (
           <Button className="w-full" type="submit" disabled={uploading}>
-            {uploading ? "Uploading..." : "Save"}
+            {uploading ? t("itemForm.uploading") : t("common.save")}
           </Button>
         )}
       </form>

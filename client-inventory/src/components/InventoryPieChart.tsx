@@ -14,6 +14,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { useTranslation } from "react-i18next"
 
 export function InventoryPieChart({
   totalInventories,
@@ -22,6 +23,7 @@ export function InventoryPieChart({
   totalInventories: number
   inventoriesLastDay: number
 }) {
+  const { t } = useTranslation()
   const chartData = [
     { segment: "lastDay", count: inventoriesLastDay, fill: "var(--color-blue-500)" },
     { segment: "older", count: totalInventories - inventoriesLastDay, fill: "var(--color-blue-300)" },
@@ -29,26 +31,26 @@ export function InventoryPieChart({
 
   const chartConfig = {
     count: {
-      label: "Inventories",
+      label: t("pieChart.inventories"),
     },
     lastDay: {
-      label: "Last 24h",
+      label: t("pieChart.last24h"),
     },
     older: {
-      label: "Older",
+      label: t("pieChart.older"),
     },
   } satisfies ChartConfig
 
   return (
     <Card className="bg-muted/50 flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Inventories Distribution</CardTitle>
-        <CardDescription>Last 24h vs older inventories</CardDescription>
+        <CardTitle>{t("pieChart.inventoriesDistribution")}</CardTitle>
+        <CardDescription>{t("pieChart.last24hVsOlder")}</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[250px]"
+          className="mx-auto aspect-square max-h-[200px]"
         >
           <PieChart>
             <ChartTooltip
@@ -66,7 +68,7 @@ export function InventoryPieChart({
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="text-muted-foreground leading-none">
-          Showing share of inventories created in the last day
+          {t("pieChart.showingShare")}
         </div>
       </CardFooter>
     </Card>

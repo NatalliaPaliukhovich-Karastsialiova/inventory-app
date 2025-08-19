@@ -31,14 +31,14 @@ export default function HomePage() {
         const data = await loadDashboard();
         setStats(data)
       } catch (error) {
-        console.error("Failed to load stats", error)
+        console.error(t("homePage.failedToLoadStats"), error)
       }
     }
     fetchStats()
   }, [])
 
   if (!stats) {
-    return <div>Loading...</div>
+    return <div>{t('common.loading')}</div>
   }
 
   const columns = getColumns(t);

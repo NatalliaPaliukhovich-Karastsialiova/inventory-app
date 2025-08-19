@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select"
+import { useTranslation } from "react-i18next"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>
@@ -22,15 +23,16 @@ interface DataTablePaginationProps<TData> {
 export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
+  const { t } = useTranslation()
   return (
     <div className="flex items-center justify-end px-2 flex-wrap gap-2 md:justify-between">
       <div className="hidden sm:flex text-muted-foreground flex-1 text-sm">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
+        {table.getFilteredSelectedRowModel().rows.length} {t("pagination.of")}{" "}
+        {table.getFilteredRowModel().rows.length} {t("pagination.rowsSelected")}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="hidden sm:flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">{t("pagination.rowsPerPage")}</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
@@ -50,7 +52,7 @@ export function DataTablePagination<TData>({
           </Select>
         </div>
         <div className="flex flex-1 items-center justify-end text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
+          {t("pagination.page")}{" "}{table.getState().pagination.pageIndex + 1} {t("pagination.of")}{" "}
           {table.getPageCount()}
         </div>
         <div className="flex items-center space-x-2">
@@ -61,7 +63,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">Go to first page</span>
+            <span className="sr-only">{t("pagination.goToFirstPage")}</span>
             <ChevronsLeft />
           </Button>
           <Button
@@ -71,7 +73,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <span className="sr-only">Go to previous page</span>
+            <span className="sr-only">{t("pagination.goToPreviousPage")}</span>
             <ChevronLeft />
           </Button>
           <Button
@@ -81,7 +83,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">Go to next page</span>
+            <span className="sr-only">{t("pagination.goToNextPage")}</span>
             <ChevronRight />
           </Button>
           <Button
@@ -91,7 +93,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
-            <span className="sr-only">Go to last page</span>
+            <span className="sr-only">{t("pagination.goToLastPage")}</span>
             <ChevronsRight />
           </Button>
         </div>

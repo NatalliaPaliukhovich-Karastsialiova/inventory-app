@@ -31,7 +31,7 @@ export default function ProfilePage() {
         const resultWrite = await fetchMyInventories('write')
         setInventoriesWithAccess(resultWrite)
       } catch (error) {
-        toast.error("Error:")
+        toast.error(t("common.error"))
       }
     }
     getData()
@@ -57,13 +57,13 @@ export default function ProfilePage() {
       </div>
       <Tabs defaultValue="own" className="w-full">
         <TabsList className="w-full">
-          <TabsTrigger value="own">Own</TabsTrigger>
-          <TabsTrigger value="write">Access</TabsTrigger>
+          <TabsTrigger value="own">{t("profilePage.own")}</TabsTrigger>
+          <TabsTrigger value="write">{t("profilePage.access")}</TabsTrigger>
         </TabsList>
         <TabsContent value="own">
           <div className="container mx-auto py-1 space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">My Inventories</h2>
+              <h2 className="text-2xl font-bold">{t("profilePage.myInventories")}</h2>
             </div>
             <div className="flex flex-wrap justify-between gap-2">
               <Input
@@ -94,7 +94,7 @@ export default function ProfilePage() {
         <TabsContent value="write">
           <div className="container mx-auto py-1 space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">Inventories with write access</h2>
+              <h2 className="text-2xl font-bold">{t("profilePage.inventoriesCanWriteTo")}</h2>
             </div>
             <div className="flex flex-wrap justify-between gap-2">
               <Input

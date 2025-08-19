@@ -1,6 +1,13 @@
-import type { Inventory } from "../table/InventoryColumns"
+import type { Inventory } from "../table/InventoryColumns";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "../ui/form";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { useTranslation } from "react-i18next";
@@ -19,19 +26,21 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  SelectValue
+} from "@/components/ui/select";
 import { AvatarWithUpload } from "./AvatarWithUpload";
+import { useCodeListsStore } from "@/store/codeListsStore";
 
 interface SettingsProps {
   inventory: Inventory | null;
   setInventory: React.Dispatch<React.SetStateAction<Inventory | null>>;
+  readOnly: boolean;
 }
 
-export function Settings({ inventory, setInventory  }: SettingsProps) {
-
+export function Settings({ inventory, setInventory, readOnly }: SettingsProps) {
   const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
+  const { codeLists } = useCodeListsStore();
 
   const form = useForm<InventorySettingSchema>({
     resolver: zodResolver(inventorySchema(t)),
@@ -40,7 +49,7 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
       description: inventory?.description ?? "",
       category: inventory?.category ?? "equipment",
       imageUrl: inventory?.imageUrl ?? null,
-      isPublic: inventory?.isPublic ?? false,
+      isPublic: inventory?.isPublic ?? false
     }
   });
 
@@ -52,17 +61,15 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "inventory-app");
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          body: formData,
-        });
-        const data = await res.json();
-        return data.secure_url || null;
-      } catch (e) {
-        console.error("Upload failed", e);
-        return null;
-      }
+      const res = await fetch(url, {
+        method: "POST",
+        body: formData
+      });
+      const data = await res.json();
+      return data.secure_url || null;
+    } catch (e) {
+      console.error(t("itemForm.uploadFailed"), e);
+      return null;
     } finally {
       setUploading(false);
     }
@@ -71,7 +78,9 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
   useEffect(() => {
     const subscription = form.watch((values) => {
       const timeout = setTimeout(() => {
-        setInventory((prev) => prev ? { ...prev, ...values } as Inventory : prev);
+        setInventory((prev) =>
+          prev ? ({ ...prev, ...values } as Inventory) : prev
+        );
       }, 300);
       return () => clearTimeout(timeout);
     });
@@ -88,6 +97,7 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
               urlPath="imageUrl"
               handleImageUpload={handleImageUpload}
               uploading={uploading}
+              readOnly={readOnly}
             />
             <div className="flex flex-col gap-4">
               <FormField
@@ -95,9 +105,15 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Title</FormLabel>
+                    <FormLabel>{t("inventory.settings.title")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Inventory title" {...field} />
+                      <Input
+                        placeholder={t(
+                          "inventory.settings.inventoryTitlePlaceholder"
+                        )}
+                        {...field}
+                        readOnly={readOnly}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -109,24 +125,31 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>{t("inventory.settings.category")}</FormLabel>
                     <FormControl>
                       <Select
                         {...field}
                         value={field.value}
                         onValueChange={field.onChange}
+                        disabled={readOnly}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select a category" />
+                          <SelectValue
+                            placeholder={t(
+                              "inventory.settings.selectCategoryPlaceholder"
+                            )}
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectLabel>Categories</SelectLabel>
-                            <SelectItem value="furniture">Furniture</SelectItem>
-                            <SelectItem value="test">Furniture2</SelectItem>
-                            <SelectItem value="test2">Furniture3</SelectItem>
-                            <SelectItem value="test2">Furniture4</SelectItem>
-                            <SelectItem value="test4">Furniture5</SelectItem>
+                            <SelectLabel>
+                              {t("inventory.settings.categories")}
+                            </SelectLabel>
+                            {codeLists?.categories.map((cat) => (
+                              <SelectItem key={cat} value={cat}>
+                                {t(`codelists.categories.${cat}`)}
+                              </SelectItem>
+                            ))}
                           </SelectGroup>
                         </SelectContent>
                       </Select>
@@ -146,13 +169,14 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
                         checked={field.value}
                         onCheckedChange={field.onChange}
                         id="isPublic"
+                        disabled={readOnly}
                       />
                     </FormControl>
                     <FormLabel
                       htmlFor="isPublic"
                       className="cursor-pointer text-sm sm:text-base"
                     >
-                      Public (any authenticated user can add items)
+                      {t("inventory.settings.public")}
                     </FormLabel>
                   </FormItem>
                 )}
@@ -166,16 +190,28 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description (Markdown)</FormLabel>
+                  <FormLabel>
+                    {t("inventory.settings.descriptionMarkdown")}
+                  </FormLabel>
                   <FormControl>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Textarea
-                        placeholder="Write description in Markdown..."
-                        rows={8}
-                        value={field.value ?? ""}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        className="resize-none font-mono"
-                      />
+                    <div
+                      className={
+                        readOnly
+                          ? "grid grid-cols-1"
+                          : "grid grid-cols-1 md:grid-cols-2 gap-4"
+                      }
+                    >
+                      {!readOnly && (
+                        <Textarea
+                          placeholder={t(
+                            "inventory.settings.writeDescriptionPlaceholder"
+                          )}
+                          rows={8}
+                          value={field.value ?? ""}
+                          onChange={(e) => field.onChange(e.target.value)}
+                          className="resize-none font-mono"
+                        />
+                      )}
                       <div className="prose prose-sm prose-stone dark:prose-invert max-w-none p-4 border rounded-md bg-muted/30 overflow-y-auto min-h-[200px]">
                         {field.value ? (
                           <ReactMarkdown rehypePlugins={[rehypeSanitize]}>
@@ -183,7 +219,7 @@ export function Settings({ inventory, setInventory  }: SettingsProps) {
                           </ReactMarkdown>
                         ) : (
                           <span className="text-muted-foreground">
-                            Live preview will appear here...
+                            {t("inventory.settings.livePreview")}
                           </span>
                         )}
                       </div>

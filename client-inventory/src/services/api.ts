@@ -6,31 +6,53 @@ import { toast } from "sonner";
 import type { InventorySettingSchema } from "@/lib/inventory";
 import type { ProfileSchema } from "@/lib/auth";
 import type { Item } from "@/components/table/ItemColumns";
+import i18n from "../i18n";
 
 const apiUrl = import.meta.env.VITE_API_URL;
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      const errorCode =
+        error.response.data?.error || error.response.data?.message;
+      if (
+        errorCode &&
+        typeof errorCode === "string" &&
+        i18n.exists(`errorCodes.${errorCode}`)
+      ) {
+        toast.error(i18n.t(`errorCodes.${errorCode}`));
+      } else if (errorCode) {
+        toast.error(errorCode);
+      } else {
+        toast.error(i18n.t("common.error"));
+      }
+    } else if (error.request) {
+      toast.error(i18n.t("errorCodes.COMMON_SERVER_ERROR"));
+    } else {
+      toast.error(i18n.t("common.error"));
+    }
+    return Promise.reject(error);
+  }
+);
 
 export async function fetchUsers(): Promise<User[]> {
   const user = useAuthStore.getState().user;
 
-  try {
-    const { data } = await axios.get<User[]>(`${apiUrl}/api/v1/admin/users`, {
-      headers: {
-        Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
-    });
+  const { data } = await axios.get<User[]>(`${apiUrl}/api/v1/admin/users`, {
+    headers: {
+      Authorization: `Bearer ${user?.token}`,
+      "Content-Type": "application/json"
+    }
+  });
 
-    return data;
-  } catch (error) {
-    console.error("Error loading users:", error);
-    throw new Error("Loading error");
-  }
+  return data;
 }
 
 export async function registerUser(email: string, password: string) {
   const { data } = await axios.post(`${apiUrl}/api/v1/auth/web/register`, {
     email,
-    password,
+    password
   });
 
   useAuthStore.getState().setUser(data);
@@ -41,7 +63,7 @@ export async function registerUser(email: string, password: string) {
 export async function loginUser(email: string, password: string) {
   const { data } = await axios.post(`${apiUrl}/api/v1/auth/web/login`, {
     email,
-    password,
+    password
   });
 
   useAuthStore.getState().setUser(data);
@@ -52,11 +74,11 @@ export async function loginUser(email: string, password: string) {
 export async function getProfile() {
   const user = useAuthStore.getState().user;
 
-  const { data } = await axios.get(`${apiUrl}/api/v1/user/profile`,{
+  const { data } = await axios.get(`${apiUrl}/api/v1/user/profile`, {
     headers: {
       Authorization: `Bearer ${user?.token}`,
-      "Content-Type": "application/json",
-    },
+      "Content-Type": "application/json"
+    }
   });
 
   useAuthStore.getState().setUser(data);
@@ -64,16 +86,17 @@ export async function getProfile() {
   return data;
 }
 
-export async function updateProfile(payload : ProfileSchema) {
+export async function updateProfile(payload: ProfileSchema) {
   const user = useAuthStore.getState().user;
 
-  const { data } = await axios.patch(`${apiUrl}/api/v1/user/profile`,
-    {...payload},
+  const { data } = await axios.patch(
+    `${apiUrl}/api/v1/user/profile`,
+    { ...payload },
     {
       headers: {
         Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
+        "Content-Type": "application/json"
+      }
     }
   );
 
@@ -88,8 +111,8 @@ export async function searchUsers(query: string) {
     params: { q: query },
     headers: {
       Authorization: `Bearer ${user?.token}`,
-      "Content-Type": "application/json",
-    },
+      "Content-Type": "application/json"
+    }
   });
 
   return data;
@@ -99,23 +122,26 @@ export async function processUsersBatch(ids: string[], action: string) {
   const user = useAuthStore.getState().user;
 
   const res = await axios.patch(
-  `${apiUrl}/api/v1/admin/users/batch`,
+    `${apiUrl}/api/v1/admin/users/batch`,
     {
       ids,
-      action,
+      action
     },
     {
       headers: {
         Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
+        "Content-Type": "application/json"
+      }
     }
   );
 
   return res.data;
 }
 
-export function handleSSOLogin(provider: string, navigate: (path: string) => void) {
+export function handleSSOLogin(
+  provider: string,
+  navigate: (path: string) => void
+) {
   window.open(
     `${apiUrl}/api/v1/auth/${provider}`,
     "login",
@@ -131,7 +157,7 @@ export function handleSSOLogin(provider: string, navigate: (path: string) => voi
       useAuthStore.getState().setUser(user);
       navigate("/");
     } else {
-      toast.error(error);
+      toast.error(i18n.t(`errorCodes.${error}`));
     }
 
     window.removeEventListener("message", handleMessage);
@@ -141,156 +167,149 @@ export function handleSSOLogin(provider: string, navigate: (path: string) => voi
 }
 
 export async function fetchInventories(): Promise<Inventory[]> {
-  try {
-    const { data } = await axios.get<Inventory[]>(`${apiUrl}/api/v1/inventories`);
-    return data;
-  } catch (error) {
-    console.error("Error loading inventories:", error);
-    throw new Error("Loading error");
-  }
+  const { data } = await axios.get<Inventory[]>(`${apiUrl}/api/v1/inventories`);
+  return data;
 }
 
 export async function fetchItems(inventoryId: string): Promise<Item[]> {
-  try {
-    const { data } = await axios.get<Item[]>(`${apiUrl}/api/v1/inventories/${inventoryId}/items`);
-    return data;
-  } catch (error) {
-    console.error("Error loading inventories:", error);
-    throw new Error("Loading error");
-  }
+  const { data } = await axios.get<Item[]>(
+    `${apiUrl}/api/v1/inventories/${inventoryId}/items`
+  );
+  return data;
 }
 
 export async function fetchMyInventories(type: string): Promise<Inventory[]> {
-  try {
-    const user = useAuthStore.getState().user;
-    const { data } = await axios.get<Inventory[]>(`${apiUrl}/api/v1/inventories/me?type=${type}`,{
+  const user = useAuthStore.getState().user;
+  const { data } = await axios.get<Inventory[]>(
+    `${apiUrl}/api/v1/inventories/me?type=${type}`,
+    {
       headers: {
         Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    return data;
-  } catch (error) {
-    console.error("Error loading inventories:", error);
-    throw new Error("Loading error");
-  }
+        "Content-Type": "application/json"
+      }
+    }
+  );
+  return data;
 }
 
 export async function fetchInventoryById(id: string): Promise<Inventory> {
-  try {
-    const user = useAuthStore.getState().user;
-    let path = "external"
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-    if (user?.token) {
-      headers["Authorization"] = `Bearer ${user.token}`;
-      path = "internal"
-    }
-    const { data } = await axios.get<Inventory>(`${apiUrl}/api/v1/inventories/${path}/${id}`,{
+  const user = useAuthStore.getState().user;
+  let path = "external";
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json"
+  };
+  if (user?.token) {
+    headers["Authorization"] = `Bearer ${user.token}`;
+    path = "internal";
+  }
+  const { data } = await axios.get<Inventory>(
+    `${apiUrl}/api/v1/inventories/${path}/${id}`,
+    {
       headers: {
         Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    return data;
-  } catch (error) {
-    console.error("Error loading inventory:", error);
-    throw new Error("Loading error");
-  }
+        "Content-Type": "application/json"
+      }
+    }
+  );
+  return data;
 }
 
 export async function fetchItemById(id: string): Promise<Item> {
-  try {
-    const { data } = await axios.get<Item>(`${apiUrl}/api/v1/items/${id}`);
-    return data;
-  } catch (error) {
-    console.error("Error loading item:", error);
-    throw new Error("Loading error");
+  const user = useAuthStore.getState().user;
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json"
+  };
+
+  if (user?.token) {
+    headers.Authorization = `Bearer ${user.token}`;
   }
+  const { data } = await axios.get<Item>(`${apiUrl}/api/v1/items/${id}`, {
+    headers
+  });
+  return data;
 }
 
 export async function loadMessages(inventoryId: string) {
-  const { data } = await axios.get(`${apiUrl}/api/v1/inventories/${inventoryId}/messages`)
-  return data.reverse()
+  const { data } = await axios.get(
+    `${apiUrl}/api/v1/inventories/${inventoryId}/messages`
+  );
+  return data.reverse();
 }
 
-export async function updateInventory(id: string, payload: InventorySettingSchema): Promise<Inventory> {
-  try {
-    const user = useAuthStore.getState().user;
-    const { data } = await axios.patch<Inventory>(`${apiUrl}/api/v1/inventories/${id}`,
-      {...payload},
-      {
+export async function updateInventory(
+  id: string,
+  payload: InventorySettingSchema
+): Promise<Inventory> {
+  const user = useAuthStore.getState().user;
+  const { data } = await axios.patch<Inventory>(
+    `${apiUrl}/api/v1/inventories/${id}`,
+    { ...payload },
+    {
       headers: {
         Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
+        "Content-Type": "application/json"
+      }
     }
-    );
-    return data;
-  } catch (error) {
-    console.error("Error updating inventories:", error);
-    throw new Error("Loading error");
-  }
+  );
+  return data;
 }
 
-export async function createInventory(payload: InventorySettingSchema): Promise<Inventory> {
-  try {
-    const user = useAuthStore.getState().user;
-    const { data } = await axios.post<Inventory>(`${apiUrl}/api/v1/inventories`,
-      payload,
-      {
+export async function createInventory(
+  payload: InventorySettingSchema
+): Promise<Inventory> {
+  const user = useAuthStore.getState().user;
+  const { data } = await axios.post<Inventory>(
+    `${apiUrl}/api/v1/inventories`,
+    payload,
+    {
       headers: {
         Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
+        "Content-Type": "application/json"
+      }
     }
-    );
-    return data;
-  } catch (error) {
-    console.error("Error creating inventories:", error);
-    throw new Error("Loading error");
-  }
+  );
+  return data;
 }
 
-export async function createItem(payload: any, inventoryId: string): Promise<Inventory> {
-  try {
-    const user = useAuthStore.getState().user;
-    const { data } = await axios.post<Inventory>(`${apiUrl}/api/v1/inventories/${inventoryId}/items`,
-      payload,
-      {
+export async function createItem(
+  payload: any,
+  inventoryId: string
+): Promise<Inventory> {
+  const user = useAuthStore.getState().user;
+  const { data } = await axios.post<Inventory>(
+    `${apiUrl}/api/v1/inventories/${inventoryId}/items`,
+    payload,
+    {
       headers: {
         Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
+        "Content-Type": "application/json"
+      }
     }
-    );
-    return data;
-  } catch (error) {
-    console.error("Error creating item:", error);
-    throw new Error("Loading error");
-  }
+  );
+  return data;
 }
 
 export async function updateItem(id: string, payload: any) {
-  try{
-    const user = useAuthStore.getState().user;
-    const { data } = await axios.patch<Item>(`${apiUrl}/api/v1/items/${id}`,
-      payload,
-      {
+  const user = useAuthStore.getState().user;
+  const { data } = await axios.patch<Item>(
+    `${apiUrl}/api/v1/items/${id}`,
+    payload,
+    {
       headers: {
         Authorization: `Bearer ${user?.token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    return data;
-  } catch (error) {
-    console.error("Error updating item:", error);
-    throw new Error("Loading error");
-  }
+        "Content-Type": "application/json"
+      }
+    }
+  );
+  return data;
 }
 
 export async function loadDashboard() {
-  const { data } = await axios.get(`${apiUrl}/api/v1/dashboard`)
-  return data
+  const { data } = await axios.get(`${apiUrl}/api/v1/dashboard`);
+  return data;
+}
+
+export async function loadCodeLists() {
+  const { data } = await axios.get(`${apiUrl}/api/v1/config`);
+  return data;
 }

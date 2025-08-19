@@ -1,40 +1,45 @@
-import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import type { Inventory } from "./InventoryColumns"
+import type { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { Inventory } from "./InventoryColumns";
 
 export type FieldType =
   | "single_line_text"
   | "multi_line_text"
   | "number"
   | "link"
-  | "boolean"
+  | "boolean";
 
 export type CustomField = {
-  id: string
-  label: string
-  type: FieldType
-  description: string
-  showInTable: boolean
-}
+  id: string;
+  label: string;
+  type: FieldType;
+  description: string;
+  showInTable: boolean;
+};
 
 export type ItemFieldValue = {
-  id: string
-  fieldId: string
-  value: string
-  field: CustomField
-}
+  id: string;
+  fieldId: string;
+  value: string;
+  field: CustomField;
+};
 
 export type Item = {
-  id: string
-  inventoryId: string
-  inventory: Inventory
-  createdAt: string
-  updatedAt: string
-  fieldValues: ItemFieldValue[]
-}
+  id: string;
+  inventoryId: string;
+  inventory: Inventory;
+  createdAt: string;
+  updatedAt: string;
+  writeAccess?: boolean;
+  ownerOrAdmin?: boolean;
+  fieldValues: ItemFieldValue[];
+};
 
-export function getColumns(t: (key: string) => string, items: CustomField[]): ColumnDef<Item>[] {
+export function getColumns(
+  t: (key: string) => string,
+  items: CustomField[]
+): ColumnDef<Item>[] {
   return items
     .filter((field) => field.showInTable)
     .map((field) => ({
@@ -52,8 +57,8 @@ export function getColumns(t: (key: string) => string, items: CustomField[]): Co
       cell: ({ row }: any) => {
         const fieldValue = row.original.fieldValues.find(
           (fv: any) => fv.field.id === field.id
-        )
-        return <span>{fieldValue?.value ?? ""}</span>
-      },
-    }))
+        );
+        return <span>{fieldValue?.value ?? ""}</span>;
+      }
+    }));
 }

@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/table"
 
 import { useEffect } from "react"
+import { useTranslation } from "react-i18next"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -44,6 +45,7 @@ export function DataTable<TData, TValue>({
     []
   )
   const [rowSelection, setRowSelection] = React.useState({})
+  const { t } = useTranslation()
 
   const table = useReactTable({
     data,
@@ -108,7 +110,7 @@ export function DataTable<TData, TValue>({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+                {t("dataTable.noResults")}
               </TableCell>
             </TableRow>
           )}

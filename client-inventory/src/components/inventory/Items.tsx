@@ -39,7 +39,7 @@ export function Items({
         const result = await fetchItems(id as string)
         setData(result)
       } catch (error) {
-        toast.error("Error:")
+        toast.error(t("common.error"))
       }
     }
     getData()

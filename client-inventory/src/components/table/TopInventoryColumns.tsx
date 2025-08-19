@@ -52,7 +52,7 @@ export function getTopColumns(t: (key: string) => string): ColumnDef<TopInventor
           className="text-left"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {t('count')}
+          {t('columns.count')}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),

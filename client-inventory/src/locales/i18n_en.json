@@ -69,17 +69,24 @@
     "title": "Title",
     "category": "Category",
     "owner": "Owner",
-    "equipment": "Equipment",
-    "furniture": "Furniture",
-    "book": "Books",
-    "other": "Other",
-    "searchPlaceholder": "Search by title"
+    "searchPlaceholder": "Search by title",
+    "settings": {
+      "title": "Title",
+      "inventoryTitlePlaceholder": "Inventory title",
+      "category": "Category",
+      "selectCategoryPlaceholder": "Select a category",
+      "categories": "Categories",
+      "public": "Public (any authenticated user can add items)",
+      "descriptionMarkdown": "Description (Markdown)",
+      "writeDescriptionPlaceholder": "Write description in Markdown...",
+      "livePreview": "Live preview will appear here..."
+    }
   },
   "dashboard": {
     "totalInventories": {
-    "title": "Total Inventories",
-    "subtitle": "Growing steadily this year",
-    "description": "All inventories currently in the system"
+      "title": "Total Inventories",
+      "subtitle": "Growing steadily this year",
+      "description": "All inventories currently in the system"
     },
     "inventoriesLastDay": {
       "title": "Inventories (Last 24h)",
@@ -94,5 +101,186 @@
     },
     "latestInventories": "Latest Inventories",
     "topInventories": "Top Inventories"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error:",
+    "noSelection": "No selection made.",
+    "actionError": "Error performing action.",
+    "profileUpdated": "Profile updated!",
+    "save": "Save"
+  },
+  "homePage": {
+    "failedToLoadStats": "Failed to load stats"
+  },
+  "chat": {
+    "sendMessage": "Send message",
+    "typeYourMessage": "Type your message..."
+  },
+  "inventoryDetails": {
+    "newInventory": "New Inventory",
+    "noDescriptionProvided": "No description provided.",
+    "addNewItem": "Add New Item",
+    "deleteInventory": "Delete Inventory",
+    "confirmDeletion": "Confirm Deletion",
+    "deleteInventoryConfirmation": "Are you sure you want to delete this inventory? This action cannot be undone.",
+    "cancel": "Cancel",
+    "editInventory": "Edit Inventory",
+    "newCustomField": "New Custom Field",
+    "customIDBuilder": "Custom ID Builder",
+    "addCustomField": "Add Custom Field",
+    "fieldLabel": "Field Label",
+    "selectAType": "Select a type",
+    "singleLineText": "Single Line Text",
+    "multiLineText": "Multi Line Text",
+    "number": "Number",
+    "boolean": "Boolean",
+    "linkFileUpload": "Link (file upload)",
+    "fieldDescriptionTooltip": "Field description (tooltip)",
+    "isRequired": "Is required?",
+    "isUnique": "Is unique?",
+    "saveField": "Save Field",
+    "editField": "Edit Field",
+    "deleteField": "Delete Field",
+    "deleteFieldConfirmation": "Are you sure you want to delete this field? This action cannot be undone, and all item data associated with this field will be lost.",
+    "fieldBuilder": "Field Builder",
+    "accessControl": "Access Control",
+    "chat": "Chat",
+    "settings": "Settings",
+    "items": "Items",
+    "description": "Description",
+    "details": "Details",
+    "failedToLoadInventory": "Failed to load inventory",
+    "inventoryUpdated": "Inventory updated",
+    "inventoryCreated": "Inventory created",
+    "failedToSaveInventory": "Failed to save inventory",
+    "discussion": "Discussion",
+    "customID": "Custom ID",
+    "fields": "Fields",
+    "access": "Access",
+    "statistics": "Statistics"
+  },
+  "columns": {
+    "count": "Count"
+  },
+  "profilePage": {
+    "myInventories": "My Inventories",
+    "inventoriesCanWriteTo": "Inventories I can write to",
+    "own": "Own",
+    "access": "Access"
+  },
+  "pieChart": {
+    "noDataAvailable": "No data available",
+    "totalItems": "Total items",
+    "inventories": "Inventories",
+    "last24h": "Last 24h",
+    "older": "Older",
+    "inventoriesDistribution": "Inventories Distribution",
+    "last24hVsOlder": "Last 24h vs older inventories",
+    "showingShare": "Showing share of inventories created in the last day"
+  },
+  "sectionCards": {
+    "inventoriesLastDay": "Inventories last day"
+  },
+  "dataTable": {
+    "noResults": "No results."
+  },
+  "table": {
+    "columns": {
+      "userAccess": {
+        "selectAll": "Select all",
+        "selectRow": "Select row"
+      }
+    }
+  },
+  "pagination": {
+    "of": "of",
+    "rowsSelected": "row(s) selected.",
+    "rowsPerPage": "Rows per page",
+    "page": "Page",
+    "goToFirstPage": "Go to first page",
+    "goToPreviousPage": "Go to previous page",
+    "goToNextPage": "Go to next page",
+    "goToLastPage": "Go to last page"
+  },
+  "profile": {
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "role": "Role",
+    "account": "Account"
+  },
+  "errorCodes": {
+    "AUTH_MISSING_CREDENTIALS": "Email and Password are required!",
+    "AUTH_EMAIL_ALREADY_IN_USE": "Email already in use.",
+    "AUTH_CREATE_USER_ERROR": "Error creating user.",
+    "AUTH_USER_NOT_FOUND": "User doesn't exist.",
+    "AUTH_USER_BLOCKED": "User blocked.",
+    "AUTH_USER_NOT_REGISTERED_WITH_EMAIL_PASSWORD": "User wasn't registered by Email and Password.",
+    "AUTH_INVALID_CREDENTIALS": "Invalid email or password.",
+    "AUTH_TOKEN_GENERATION_ERROR": "Error generating token.",
+    "AUTH_UNAUTHORIZED": "Unauthorized.",
+    "AUTH_AUTHORIZATION_REQUIRED": "Authorization is required.",
+    "AUTH_ACCESS_FORBIDDEN": "Access forbidden.",
+    "AUTH_INVALID_TOKEN": "Invalid token.",
+    "COMMON_SERVER_ERROR": "Server error.",
+    "ADMIN_IDS_ARRAY_REQUIRED": "IDs array required.",
+    "ADMIN_ACTION_REQUIRED": "Action is required.",
+    "ADMIN_UNKNOWN_ACTION": "Unknown action.",
+    "ADMIN_USERS_DELETED_SUCCESS": "Users deleted successfully.",
+    "ADMIN_ACTION_APPLIED_SUCCESS": "Action applied successfully.",
+    "INVENTORY_FAILED_CREATE": "Failed to create inventory.",
+    "INVENTORY_NOT_FOUND": "Inventory not found.",
+    "INVENTORY_FAILED_FETCH": "Failed to fetch inventory.",
+    "INVENTORY_FAILED_UPDATE": "Failed to update inventory.",
+    "INVENTORY_DELETED_SUCCESS": "Inventory deleted successfully.",
+    "INVENTORY_FAILED_DELETE": "Failed to delete inventory.",
+    "INVENTORY_NO_WRITE_ACCESS": "No write access.",
+    "INVENTORY_INVALID_FIELDS": "Invalid fields.",
+    "ITEM_INVENTORY_ID_REQUIRED": "Inventory ID is required.",
+    "CHAT_FAILED_LOAD_MESSAGES": "Failed to load messages.",
+    "ITEM_NOT_FOUND": "Item not found.",
+    "ITEM_FAILED_FETCH": "Failed to fetch item.",
+    "ITEM_FAILED_UPDATE": "Failed to update item.",
+    "PROFILE_FAILED_UPDATE": "Failed to update profile."
+  },
+  "itemForm": {
+    "uploadFailed": "Upload failed",
+    "itemUpdatedSuccessfully": "Item updated successfully!",
+    "itemCreatedSuccessfully": "Item created successfully!",
+    "failedToCreateItem": "Failed to create item",
+    "uploading": "Uploading..."
+  },
+  "userAccessTable": {
+    "inputPlaceholder": "Input name or email",
+    "usersNotFound": "Users not found"
+  },
+  "sidebar": {
+    "platform": "Platform"
+  },
+  "codelists": {
+    "categories": {
+      "equipment": "Equipment",
+      "furniture": "Furniture",
+      "book": "Book",
+      "other": "Other"
+    },
+    "fieldTypes": {
+      "single_line_text": "Single line text",
+      "multi_line_text": "Multi line text",
+      "number": "Number",
+      "link": "Link",
+      "boolean": "Boolean"
+    },
+    "idSeqTypes": {
+      "fixed": "Fixed value",
+      "guid": "GUID",
+      "date": "Date",
+      "seq": "Sequence",
+      "rand6": "6 random digits",
+      "rand9": "9 random digits",
+      "rand20": "20 random bits",
+      "rand32": "32 random bits"
+    }
   }
 }

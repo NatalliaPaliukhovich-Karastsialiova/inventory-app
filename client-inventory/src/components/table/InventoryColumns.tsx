@@ -1,9 +1,9 @@
-import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import type { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import type { User } from "./UserColumns"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { User } from "./UserColumns";
 
 type CustomIdType =
   | "fixed"
@@ -35,31 +35,34 @@ export type CustomField = {
   type: FieldType;
   description: string;
   showInTable: boolean;
-}
+};
 
 export type UserAccessList = {
   userId: string;
   user: {
     email: string;
     fullName: string;
-    avatar?: string,
-    avatarFallback?: string
+    avatar?: string;
+    avatarFallback?: string;
   };
-}
+};
 
 export type Inventory = {
-  id: string
-  title: string
-  category: string
-  isPublic: boolean
-  owner: User
-  description: string
-  createdAt: string
-  imageUrl: string
-  customIdElements?: CustomIdElement[]
-  inventoryField?: CustomField[]
-  accessList?: UserAccessList[]
-}
+  id: string;
+  title: string;
+  category: string;
+  isPublic: boolean;
+  owner: User;
+  ownerId: string;
+  description: string;
+  createdAt: string;
+  imageUrl: string;
+  writeAccess?: boolean;
+  ownerOrAdmin?: boolean;
+  customIdElements?: CustomIdElement[];
+  inventoryField?: CustomField[];
+  accessList?: UserAccessList[];
+};
 
 export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
   return [
@@ -71,13 +74,13 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
           className="text-left"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {t('inventory.title')}
+          {t("inventory.title")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
-        const { title, imageUrl, createdAt } = row.original
-        const createdDate = new Date(createdAt)
+        const { title, imageUrl, createdAt } = row.original;
+        const createdDate = new Date(createdAt);
 
         return (
           <div className="text-right font-medium flex gap-3">
@@ -88,12 +91,12 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{title}</span>
               <span className="truncate text-xs text-muted-foreground">
-                {t('inventory.createdAt')}: {createdDate.toLocaleDateString()}
+                {t("inventory.createdAt")}: {createdDate.toLocaleDateString()}
               </span>
             </div>
           </div>
-        )
-      },
+        );
+      }
     },
     {
       accessorKey: "category",
@@ -103,19 +106,19 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
           className=""
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {t('inventory.category')}
+          {t("inventory.category")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
-        const { category } = row.original
+        const { category } = row.original;
 
         return (
           <div className="text-left font-medium flex gap-3">
             {t(`inventory.${category}`)}
           </div>
-        )
-      },
+        );
+      }
     },
     {
       accessorKey: "owner",
@@ -125,18 +128,20 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
           className="text-left"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {t('inventory.owner')}
+          {t("inventory.owner")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
-        const { fullName, avatar, email } = row.original.owner
+        const { fullName, avatar, email } = row.original.owner;
 
         return (
           <div className="text-right font-medium flex gap-3">
             <Avatar className="rounded-lg">
               <AvatarImage src={avatar} />
-              <AvatarFallback>{fullName?.[0]?.toUpperCase() ?? "?"}</AvatarFallback>
+              <AvatarFallback>
+                {fullName?.[0]?.toUpperCase() ?? "?"}
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{fullName}</span>
@@ -145,8 +150,8 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
               </span>
             </div>
           </div>
-        )
-      },
-    },
-  ]
+        );
+      }
+    }
+  ];
 }

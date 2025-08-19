@@ -1,56 +1,58 @@
-import prisma from "../config/db.js";
-import { hashPassword, comparePassword } from "../utils/cryptoUtils.js";
-import { getUserProfile } from "../models/userModel.js";
+import { getUserProfile, findUserByEmail, validatePassword, isBlocked, createUser } from "../models/userModel.js";
 
 export const registerWebUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password)
-      return res.status(400).json({ error: "Email and Password are required!" });
+    if (!email || !password) {
+      return res.status(400).json({ error: "AUTH_MISSING_CREDENTIALS" });
+    }
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await findUserByEmail(email);
 
-    if (existingUser && existingUser.password)
-      return res.status(400).json({ error: "Email already in use." });
+    if (existingUser && existingUser.password) {
+      return res.status(400).json({ error: "AUTH_EMAIL_ALREADY_IN_USE" });
+    }
 
-    const hashedPassword = await hashPassword(password);
     let currentUser;
     if (!existingUser) {
-      currentUser = await prisma.user.create({
-      data: { email, password: hashedPassword, role: "user" },
-    });
+      currentUser = await createUser(email, password);
     } else {
-      currentUser = await prisma.user.update({
-        where: { email },
-        data: { password: hashedPassword },
-      });
+      currentUser = await updateUserPassword(email, password);
     }
+
     const profile = await getUserProfile(currentUser.id)
     res.json(profile);
   } catch (err) {
-    return res.status(500).json({ error: `Error creating user, ${err.message}`});
+    res.status(500).json({ error: "AUTH_CREATE_USER_ERROR" });
   }
 };
 
 export const loginWebUser = async (req, res) => {
   try{
     const { email, password } = req.body;
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await findUserByEmail(email);
+
     if (!user) {
-      return res.status(404).json({ error: "User doesn't exist"});
+      return res.status(404).json({ error: "AUTH_USER_NOT_FOUND" });
     }
-    if (user.status === 'blocked') {
-      return res.status(403).json({ error: "User blocked"});
+
+    if (isBlocked(user)) {
+      return res.status(403).json({ error: "AUTH_USER_BLOCKED" });
     }
-    if(!user.password && password)
-      return res.status(401).json({ error: "User wasn't registered by Email and Password." });
-    if (!(await comparePassword(password, user.password)))
-      return res.status(401).json({ error: "Invalid email or password." });
-      const profile = await getUserProfile(user.id)
+
+    if (!user.password && password) {
+      return res.status(401).json({ error: "AUTH_USER_NOT_REGISTERED_WITH_EMAIL_PASSWORD" });
+    }
+
+    if (!(await validatePassword(password, user.password))) {
+      return res.status(401).json({ error: "AUTH_INVALID_CREDENTIALS" });
+    }
+
+    const profile = await getUserProfile(user.id)
     return res.json(profile);
   } catch (err) {
-    return res.status(500).json({ error: `Error generating token., ${err.message}`});
+    res.status(500).json({ error: "AUTH_TOKEN_GENERATION_ERROR" });
   }
 };
 
@@ -59,17 +61,17 @@ export const socialCallbackController = async (req, res) => {
   let error = null;
 
   if (!user) {
-    error = "Error: Unauthorized";
-  } else if (user.status === "blocked") {
-    error = "Error: User blocked";
+    error = "AUTH_UNAUTHORIZED";
+  } else if (isBlocked(user)) {
+    error = "AUTH_USER_BLOCKED";
   }
 
   if (error) {
     return res.send(`
-      <script>
-        window.opener.postMessage(${JSON.stringify({ error })}, '*');
-        window.close();
-      </script>
+    <script>
+      window.opener.postMessage(${JSON.stringify({ error })}, '*');
+      window.close();
+    </script>
     `);
   }
 

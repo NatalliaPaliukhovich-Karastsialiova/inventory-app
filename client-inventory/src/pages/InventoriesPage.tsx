@@ -1,10 +1,13 @@
-import DashboardLayout from "@/layouts/DashboardLayout"
+import DashboardLayout from "@/layouts/DashboardLayout";
 import { DataTable } from "@/components/table/DataTable";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
-import { getColumns, type Inventory } from "@/components/table/InventoryColumns";
+import {
+  getColumns,
+  type Inventory
+} from "@/components/table/InventoryColumns";
 import { fetchInventories } from "@/services/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -12,9 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 
 export default function InventoriesPage() {
-  const [data, setData] = useState<Inventory[]>([])
-  const [search, setSearch] = useState("")
-  const { t, i18n } = useTranslation()
+  const [data, setData] = useState<Inventory[]>([]);
+  const [search, setSearch] = useState("");
+  const { t, i18n } = useTranslation();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const user = useAuthStore.getState().user;
   const navigate = useNavigate();
@@ -22,22 +25,20 @@ export default function InventoriesPage() {
   useEffect(() => {
     async function getData() {
       try {
-        const result = await fetchInventories()
-        setData(result)
+        const result = await fetchInventories();
+        setData(result);
       } catch (error) {
-        toast.error("Error:")
+        toast.error("Error:");
       }
     }
-    getData()
-  }, [])
+    getData();
+  }, []);
 
-  const columns = getColumns(t)
+  const columns = getColumns(t);
 
-
-  const filteredData = data.filter(
-    (inventory) =>
-      inventory.title?.toLowerCase().includes(search.toLowerCase())
-  )
+  const filteredData = data.filter((inventory) =>
+    inventory.title?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <DashboardLayout>

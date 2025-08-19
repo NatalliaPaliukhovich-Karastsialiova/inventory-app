@@ -1,34 +1,49 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { createInventory, fetchInventoryById, fetchItemById, updateInventory } from "@/services/api";
-import type { CustomField, Inventory, UserAccessList } from "@/components/table/InventoryColumns";
+import {
+  createInventory,
+  fetchInventoryById,
+  fetchItemById,
+  updateInventory
+} from "@/services/api";
+import type {
+  CustomField,
+  Inventory,
+  UserAccessList
+} from "@/components/table/InventoryColumns";
 import { toast } from "sonner";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator
+} from "@/components/ui/breadcrumb";
 import { useAuthStore } from "@/store/authStore";
 import { ItemForm } from "@/components/inventory/ItemForm";
 import type { Item } from "@/components/table/ItemColumns";
 
 export default function ItemPage() {
-  const { id, itemId } = useParams<{ id: string, itemId: string }>();
+  const { id, itemId } = useParams<{ id: string; itemId: string }>();
   const navigate = useNavigate();
   const [inventory, setInventory] = useState<Inventory | null>(null);
   const [item, setItem] = useState<Item | null>(null);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
-  const user = useAuthStore.getState().user
 
   useEffect(() => {
     async function load() {
       try {
-        if(itemId && id){
+        if (itemId && id) {
           const data = await fetchItemById(itemId as string);
           setItem(data);
-          setInventory(data?.inventory)
-          setCustomFields(data?.inventory.inventoryField ?? [])
-        } else if(!itemId && id){
+          setInventory(data?.inventory);
+          setCustomFields(data?.inventory.inventoryField ?? []);
+        } else if (!itemId && id) {
           const data = await fetchInventoryById(id as string);
-          setInventory(data)
-          setCustomFields(data?.inventoryField ?? [])
+          setInventory(data);
+          setCustomFields(data?.inventoryField ?? []);
         }
       } catch (error) {
         toast.error("Failed to load inventory");
@@ -47,7 +62,9 @@ export default function ItemPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href={`/inventories/${inventory?.id}`}>{inventory?.title || "Inventory"}</BreadcrumbLink>
+              <BreadcrumbLink href={`/inventories/${inventory?.id}`}>
+                {inventory?.title || "Inventory"}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -61,13 +78,12 @@ export default function ItemPage() {
             <ItemForm
               templateFields={customFields}
               inventoryId={inventory?.id as string}
-              readOnly={false}
+              readOnly={!(item?.writeAccess || inventory?.writeAccess)}
               item={item}
               setItem={setItem}
             />
           </div>
         )}
-
       </div>
     </DashboardLayout>
   );

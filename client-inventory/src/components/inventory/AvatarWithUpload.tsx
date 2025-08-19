@@ -1,7 +1,13 @@
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { useRef, useState, useEffect } from "react";
 
-export function AvatarWithUpload({ form, urlPath, handleImageUpload, uploading }: any) {
+export function AvatarWithUpload({
+  form,
+  urlPath,
+  handleImageUpload,
+  uploading,
+  readOnly
+}: any) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const watchedUrl = form.watch(urlPath);
 
@@ -21,7 +27,11 @@ export function AvatarWithUpload({ form, urlPath, handleImageUpload, uploading }
   return (
     <>
       <div
-        className="flex justify-center md:justify-start cursor-pointer relative"
+        className={
+          readOnly
+            ? "flex justify-center md:justify-start relative"
+            : "flex justify-center md:justify-start cursor-pointer relative"
+        }
         onClick={() => inputRef.current?.click()}
       >
         <Avatar className="w-36 h-36 rounded-md overflow-hidden bg-gray-100 dark:bg-gray-800 relative">
@@ -30,7 +40,9 @@ export function AvatarWithUpload({ form, urlPath, handleImageUpload, uploading }
               <img
                 src={localUrl}
                 alt="Inventory"
-                className={`object-cover w-full h-full ${imageLoading ? "opacity-0" : "opacity-100"}`}
+                className={`object-cover w-full h-full ${
+                  imageLoading ? "opacity-0" : "opacity-100"
+                }`}
                 onLoad={() => setImageLoading(false)}
                 onError={() => setImageLoading(false)}
               />
@@ -45,22 +57,23 @@ export function AvatarWithUpload({ form, urlPath, handleImageUpload, uploading }
           )}
         </Avatar>
       </div>
-
-      <input
-        type="file"
-        accept="image/*"
-        ref={inputRef}
-        className="hidden"
-        disabled={uploading}
-        onChange={async (e) => {
-          const file = e.target.files?.[0];
-          if (!file) return;
-          setImageLoading(true);
-          const url = await handleImageUpload(file);
-          if (url) form.setValue(urlPath, url);
-          else setImageLoading(false);
-        }}
-      />
+      {!readOnly && (
+        <input
+          type="file"
+          accept="image/*"
+          ref={inputRef}
+          className="hidden"
+          disabled={uploading}
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            setImageLoading(true);
+            const url = await handleImageUpload(file);
+            if (url) form.setValue(urlPath, url);
+            else setImageLoading(false);
+          }}
+        />
+      )}
     </>
   );
 }

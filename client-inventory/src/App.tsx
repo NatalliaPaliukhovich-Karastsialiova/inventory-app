@@ -5,13 +5,25 @@ import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminPage from "./pages/AdminPage";
 import InventoriesPage from "./pages/InventoriesPage";
-import { ThemeProvider } from "@/components/ThemeProvider"
-import { Toaster } from 'sonner'
-import { AuthRedirectRoute, AuthRedirectAdminRoute, NonAuthRedirectRoute } from "./components/AuthRedirectRoute";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { Toaster } from "sonner";
+import {
+  AuthRedirectRoute,
+  AuthRedirectAdminRoute,
+  NonAuthRedirectRoute
+} from "./components/AuthRedirectRoute";
 import InventoryDetailsPage from "./pages/InventoryDetailsPage";
 import ItemPage from "./pages/ItemPage";
+import { useCodeListsStore } from "@/store/codeListsStore";
+import { useEffect } from "react";
 
 export default function App() {
+  const fetchCodeLists = useCodeListsStore((s) => s.fetchCodeLists);
+
+  useEffect(() => {
+    fetchCodeLists();
+  }, [fetchCodeLists]);
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Router>
@@ -23,48 +35,57 @@ export default function App() {
         />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={
+          <Route
+            path="/login"
+            element={
               <AuthRedirectRoute>
                 <LoginPage />
               </AuthRedirectRoute>
             }
           />
-          <Route path="/register" element={
+          <Route
+            path="/register"
+            element={
               <AuthRedirectRoute>
                 <RegisterPage />
               </AuthRedirectRoute>
             }
           />
-          <Route path="/profile" element={
+          <Route
+            path="/profile"
+            element={
               <NonAuthRedirectRoute>
                 <ProfilePage />
               </NonAuthRedirectRoute>
             }
           />
-          <Route path="/admin" element={
+          <Route
+            path="/admin"
+            element={
               <AuthRedirectAdminRoute>
                 <AdminPage />
               </AuthRedirectAdminRoute>
             }
           />
-          <Route path="/inventories" element={<InventoriesPage />}/>
+          <Route path="/inventories" element={<InventoriesPage />} />
           <Route path="/inventories/:id" element={<InventoryDetailsPage />} />
-          <Route path="/inventories/new" element={
+          <Route
+            path="/inventories/new"
+            element={
               <NonAuthRedirectRoute>
                 <InventoryDetailsPage />
               </NonAuthRedirectRoute>
             }
           />
-          <Route path="/inventories/:id/items/new" element={
+          <Route
+            path="/inventories/:id/items/new"
+            element={
               <NonAuthRedirectRoute>
                 <ItemPage />
               </NonAuthRedirectRoute>
             }
           />
-          <Route path="/inventories/:id/items/:itemId" element={
-              <ItemPage />
-            }
-          />
+          <Route path="/inventories/:id/items/:itemId" element={<ItemPage />} />
         </Routes>
       </Router>
     </ThemeProvider>

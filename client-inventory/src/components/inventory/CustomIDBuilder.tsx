@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectLabel,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
 import {
   DndContext,
@@ -16,16 +16,18 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-  type DragEndEvent,
+  type DragEndEvent
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   useSortable,
-  verticalListSortingStrategy,
+  verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripHorizontal, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useCodeListsStore } from "@/store/codeListsStore";
 
 type CustomIdType =
   | "fixed"
@@ -47,11 +49,13 @@ export interface CustomIDField {
 interface CustomIDBuilderProps {
   initialFields?: CustomIDField[];
   onChange: (fields: CustomIDField[]) => void;
+  readOnly: boolean;
 }
 
 export function CustomIDBuilder({
   initialFields = [],
   onChange,
+  readOnly
 }: CustomIDBuilderProps) {
   const [fields, setFields] = useState<CustomIDField[]>(initialFields);
   const listRef = useRef<HTMLDivElement>(null);
@@ -63,7 +67,7 @@ export function CustomIDBuilder({
       id: crypto.randomUUID(),
       type: "fixed",
       value: "",
-      separator: "",
+      separator: ""
     };
     const newFields = [...fields, newField];
     setFields(newFields);
@@ -85,41 +89,41 @@ export function CustomIDBuilder({
   }
 
   function handleDragEnd(event: DragEndEvent) {
-  const { active, over, delta } = event;
+    const { active, over, delta } = event;
 
-  const parentRect = listRef.current?.getBoundingClientRect();
-   const activeRect = event.active.rect.current?.initial;
+    const parentRect = listRef.current?.getBoundingClientRect();
+    const activeRect = event.active.rect.current?.initial;
 
-  if (!parentRect || !activeRect) return;
+    if (!parentRect || !activeRect) return;
 
-  const finalX = activeRect.left + delta.x;
-  const finalY = activeRect.top + delta.y;
+    const finalX = activeRect.left + delta.x;
+    const finalY = activeRect.top + delta.y;
 
-  if (
-    finalY < parentRect.top - 100 ||
-    finalY > parentRect.bottom + 100 ||
-    finalX < parentRect.left - 100 ||
-    finalX > parentRect.right + 100
-  ) {
-    removeField(active.id as string);
-    return;
+    if (
+      finalY < parentRect.top - 100 ||
+      finalY > parentRect.bottom + 100 ||
+      finalX < parentRect.left - 100 ||
+      finalX > parentRect.right + 100
+    ) {
+      removeField(active.id as string);
+      return;
+    }
+
+    if (active.id !== over?.id && over?.id) {
+      const oldIndex = fields.findIndex((f) => f.id === active.id);
+      const newIndex = fields.findIndex((f) => f.id === over?.id);
+      const newFields = arrayMove(fields, oldIndex, newIndex);
+      setFields(newFields);
+      onChange(newFields);
+    }
   }
-
-  if (active.id !== over?.id && over?.id) {
-    const oldIndex = fields.findIndex((f) => f.id === active.id);
-    const newIndex = fields.findIndex((f) => f.id === over?.id);
-    const newFields = arrayMove(fields, oldIndex, newIndex);
-    setFields(newFields);
-    onChange(newFields);
-  }
-}
 
   return (
     <div>
       <DndContext
-        sensors={sensors}
+        sensors={readOnly ? undefined : sensors}
         collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
+        onDragEnd={readOnly ? undefined : handleDragEnd}
       >
         <div ref={listRef}>
           <SortableContext
@@ -132,15 +136,18 @@ export function CustomIDBuilder({
                 field={field}
                 updateField={updateField}
                 removeField={removeField}
+                readOnly={readOnly}
               />
             ))}
           </SortableContext>
         </div>
       </DndContext>
 
-      <Button className="mt-4 w-full" onClick={addField}>
-        Add element
-      </Button>
+      {!readOnly && (
+        <Button className="mt-4 w-full" onClick={addField}>
+          Add element
+        </Button>
+      )}
     </div>
   );
 }
@@ -149,18 +156,19 @@ interface SortableFieldProps {
   field: CustomIDField;
   updateField: (id: string, updated: Partial<CustomIDField>) => void;
   removeField: (id: string) => void;
+  readOnly: boolean;
 }
 
-function SortableField({
-  field,
-  updateField,
-}: SortableFieldProps) {
+function SortableField({ field, updateField, readOnly }: SortableFieldProps) {
+  const { t } = useTranslation();
+  const { codeLists } = useCodeListsStore();
+
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: field.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition
   };
 
   return (
@@ -169,20 +177,23 @@ function SortableField({
       style={style}
       className="flex flex-col sm:flex-row gap-3 items-start sm:items-center w-full"
     >
-      <div
-        className="cursor-move p-2"
-        aria-label="Drag handle"
-        {...attributes}
-        {...listeners}
-      >
-        <GripHorizontal />
-      </div>
+      {!readOnly && (
+        <div
+          className="cursor-move p-2"
+          aria-label="Drag handle"
+          {...attributes}
+          {...listeners}
+        >
+          <GripHorizontal />
+        </div>
+      )}
 
       <Select
         value={field.type}
         onValueChange={(value) =>
           updateField(field.id, { type: value as CustomIdType })
         }
+        disabled={readOnly}
       >
         <SelectTrigger className="w-full sm:w-[250px]">
           <SelectValue />
@@ -190,13 +201,11 @@ function SortableField({
         <SelectContent>
           <SelectGroup>
             <SelectLabel>ID Type</SelectLabel>
-            <SelectItem value="fixed">Fixed</SelectItem>
-            <SelectItem value="rand20">20-bit random</SelectItem>
-            <SelectItem value="rand32">32-bit random</SelectItem>
-            <SelectItem value="rand6">6 digits</SelectItem>
-            <SelectItem value="rand9">9 digits</SelectItem>
-            <SelectItem value="date">Date/time</SelectItem>
-            <SelectItem value="seq">Sequence</SelectItem>
+            {codeLists?.idSeqTypes.map((idSeqType) => (
+              <SelectItem key={idSeqType} value={idSeqType}>
+                {t(`codelists.idSeqTypes.${idSeqType}`)}
+              </SelectItem>
+            ))}
           </SelectGroup>
         </SelectContent>
       </Select>
@@ -206,6 +215,7 @@ function SortableField({
         value={field.value}
         onChange={(e) => updateField(field.id, { value: e.target.value })}
         className="w-full sm:flex-grow"
+        readOnly={readOnly}
       />
 
       <Input
@@ -213,6 +223,7 @@ function SortableField({
         value={field.separator}
         onChange={(e) => updateField(field.id, { separator: e.target.value })}
         className="w-full sm:flex-grow"
+        readOnly={readOnly}
       />
     </div>
   );
