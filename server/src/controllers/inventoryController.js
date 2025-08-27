@@ -1,4 +1,7 @@
 import prisma from "../config/db.js";
+import { sendError, mapAndSendError } from "../utils/http.js";
+import { InventoryCategory } from "@prisma/client";
+import { z } from "zod";
 import {
   createInventoryInDb,
   getInventoryByIdFromDb,
@@ -9,16 +12,36 @@ import {
   myListInventoriesFromDb,
   createItemInDb,
   getItemsFromDb,
-  updateItemInDb
+  updateItemInDb,
+  computeInventoryStats
 } from "../models/inventoryModel.js";
+
+const createInventorySchema = z.object({
+  title: z.string().min(1),
+  description: z.string().optional(),
+  category: z.nativeEnum(InventoryCategory),
+  imageUrl: z.string().url().optional().or(z.literal("")).optional().nullable(),
+  isPublic: z.boolean().optional(),
+});
+
+const updateInventorySchema = z.object({
+  title: z.string().min(1).optional(),
+  description: z.string().optional(),
+  category: z.nativeEnum(InventoryCategory).optional(),
+  imageUrl: z.string().url().optional().or(z.literal("")).optional().nullable(),
+  isPublic: z.boolean().optional(),
+  version: z.number().int().nonnegative().optional()
+});
 
 export async function createInventory(req, res) {
   try {
+    const parsed = createInventorySchema.safeParse(req.body || {});
+    if (!parsed.success) return sendError(res, "INVENTORY_INVALID_FIELDS", 400);
     const inventory = await createInventoryInDb(req.body, req.user.id);
     res.status(201).json(inventory);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "INVENTORY_FAILED_CREATE" });
+    return mapAndSendError(res, error);
   }
 }
 
@@ -27,9 +50,7 @@ export async function getInventoryById(req, res) {
     const { id } = req.params;
     const inventory = await getInventoryByIdFromDb(id);
 
-    if (!inventory) {
-      return res.status(404).json({ error: "INVENTORY_NOT_FOUND" });
-    }
+    if (!inventory) return sendError(res, "INVENTORY_NOT_FOUND", 404);
 
     res.json({
       ...inventory,
@@ -38,7 +59,7 @@ export async function getInventoryById(req, res) {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "INVENTORY_FAILED_FETCH" });
+    return mapAndSendError(res, error);
   }
 }
 
@@ -47,21 +68,22 @@ export async function getInventoryByIdExternal(req, res) {
     const { id } = req.params;
     const inventory = await getInventoryByIdExternalFromDb(id);
 
-    if (!inventory) {
-      return res.status(404).json({ error: "INVENTORY_NOT_FOUND" });
-    }
+    if (!inventory) return sendError(res, "INVENTORY_NOT_FOUND", 404);
 
     res.json(inventory);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "INVENTORY_FAILED_FETCH" });
+    return mapAndSendError(res, error);
   }
 }
 
 export async function updateInventory(req, res) {
   try {
     const { id } = req.params;
-    const updatedInventory = await updateInventoryInDb(id, req.body);
+    const parsed = updateInventorySchema.safeParse(req.body || {});
+    if (!parsed.success) return sendError(res, "INVENTORY_INVALID_FIELDS", 400);
+    const { version, ...rest } = parsed.data;
+    const updatedInventory = await updateInventoryInDb(id, rest, version);
     res.json({
       ...updatedInventory,
       writeAccess: req.writeAccess,
@@ -69,18 +91,21 @@ export async function updateInventory(req, res) {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "INVENTORY_FAILED_UPDATE" });
+    return mapAndSendError(res, error);
   }
 }
 
 export async function deleteInventory(req, res) {
   try {
     const { id } = req.params;
+    const inv = await prisma.inventory.findUnique({ where: { id }, select: { ownerId: true } });
+    if (!inv) return sendError(res, "INVENTORY_NOT_FOUND", 404);
+    if (req.user?.role !== 'admin' && inv.ownerId !== req.user?.id) return sendError(res, "INVENTORY_NO_WRITE_ACCESS", 403);
     await deleteInventoryFromDb(id);
     res.json({ message: "INVENTORY_DELETED_SUCCESS" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "INVENTORY_FAILED_DELETE" });
+    return mapAndSendError(res, error);
   }
 }
 
@@ -90,7 +115,7 @@ export async function listInventories(req, res) {
     res.json(inventories);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "COMMON_SERVER_ERROR" });
+    return mapAndSendError(res, error);
   }
 }
 
@@ -101,7 +126,7 @@ export async function myListInventories(req, res) {
     res.json(inventories);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "COMMON_SERVER_ERROR" });
+    return mapAndSendError(res, error);
   }
 }
 
@@ -111,24 +136,19 @@ export async function createItem(req, res) {
 
   const inventory = await getInventoryByIdFromDb(inventoryId);
 
-  if (!inventory) {
-    return res.status(404).json({ error: "INVENTORY_NOT_FOUND" });
-  }
+  if (!inventory) return sendError(res, "INVENTORY_NOT_FOUND", 404);
 
   const canWrite =
     inventory.ownerId === req.user.id ||
-    inventory.accessList.some((a) => a.userId === req.user.id);
-  if (!canWrite) {
-    return res.status(403).json({ error: "INVENTORY_NO_WRITE_ACCESS" });
-  }
+    inventory.accessList.some((a) => a.userId === req.user.id) ||
+    inventory.isPublic === true;
+  if (!canWrite && req.user.role !== 'admin') return sendError(res, "INVENTORY_NO_WRITE_ACCESS", 403);
 
   const fieldIds = fieldValues.map((f) => f.fieldId);
   const inventoryFields = await prisma.inventoryField.findMany({
     where: { inventoryId, id: { in: fieldIds } }
   });
-  if (inventoryFields.length !== fieldValues.length) {
-    return res.status(400).json({ error: "INVENTORY_INVALID_FIELDS" });
-  }
+  if (inventoryFields.length !== fieldValues.length) return sendError(res, "INVENTORY_INVALID_FIELDS", 400);
 
   const item = await createItemInDb(inventoryId, fieldValues);
 
@@ -139,14 +159,23 @@ export const getItems = async (req, res) => {
   try {
     const { inventoryId } = req.params;
 
-    if (!inventoryId) {
-      return res.status(400).json({ message: "ITEM_INVENTORY_ID_REQUIRED" });
-    }
+    if (!inventoryId) return sendError(res, "ITEM_INVENTORY_ID_REQUIRED", 400);
     const items = await getItemsFromDb(inventoryId);
 
     return res.status(200).json(items);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "COMMON_SERVER_ERROR", error });
+    return mapAndSendError(res, error);
+  }
+};
+
+export const getInventoryStats = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const stats = await computeInventoryStats(id);
+    return res.status(200).json(stats);
+  } catch (error) {
+    console.error(error);
+    return mapAndSendError(res, error);
   }
 };

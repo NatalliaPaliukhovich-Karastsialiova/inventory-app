@@ -1,21 +1,16 @@
-import * as React from "react"
-import {
-  BookOpen,
-  Bot,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
+import * as React from "react";
+import { BookOpen, Settings2, SquareTerminal } from "lucide-react";
 
-import { NavMain } from "@/components/NavMain"
-import { NavUser } from "@/components/NavUser"
+import { NavMain } from "@/components/NavMain";
+import { NavUser } from "@/components/NavUser";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
-} from "@/components/ui/sidebar"
-import { AppLogo } from "./AppLogo"
+  SidebarRail
+} from "@/components/ui/sidebar";
+import { AppLogo } from "./AppLogo";
 
 const data = {
   navMain: [
@@ -24,25 +19,24 @@ const data = {
       url: "/",
       icon: SquareTerminal,
       isActive: true,
-      access: 'user'
+      access: "user"
     },
     {
       title: "inventories",
       url: "/inventories",
       icon: BookOpen,
-      access: 'user'
+      access: "user"
     },
     {
       title: "adminConsole",
       url: "/admin",
       icon: Settings2,
-      access: 'admin'
-    },
-  ],
-}
+      access: "admin"
+    }
+  ]
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -56,5 +50,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

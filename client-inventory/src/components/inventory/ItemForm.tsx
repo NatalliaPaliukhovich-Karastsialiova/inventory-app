@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import type { CustomField } from "./InventoryFieldBuilder";
+import type { CustomField } from "@/types";
 import {
   Tooltip,
   TooltipContent,
-  TooltipTrigger,
+  TooltipTrigger
 } from "@/components/ui/tooltip";
 import {
   Form,
@@ -15,16 +16,22 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormDescription,
-  FormMessage,
+  FormMessage
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { createItem, updateItem } from "@/services/api";
-import type { Item } from "../table/ItemColumns";
+import {
+  createItem,
+  updateItem,
+  fetchItemById,
+  uploadFile
+} from "@/services/api";
+import type { Item, CustomIDField } from "@/types";
 import { useTranslation } from "react-i18next";
+import ConflictDialog from "@/components/ConflictDialog";
+import { validateCustomId, generateCustomIdPreview } from "@/lib/inventory";
 
 interface ItemFormProps {
   templateFields?: CustomField[];
@@ -32,9 +39,17 @@ interface ItemFormProps {
   readOnly: boolean;
   item?: Item | null;
   setItem: React.Dispatch<React.SetStateAction<Item | null>>;
+  enableAutoSave?: boolean;
+  onDirtyChange?: (dirty: boolean) => void;
+  onSavingChange?: (saving: boolean) => void;
+  customId?: string;
+  customIdElements: CustomIDField[];
 }
 
-const generateSchema = (fields: CustomField[]) => {
+const generateSchema = (
+  fields: CustomField[],
+  customIdElements: CustomIDField[]
+) => {
   const shape: Record<string, z.ZodTypeAny> = {};
   fields.forEach((field) => {
     switch (field.type) {
@@ -55,24 +70,60 @@ const generateSchema = (fields: CustomField[]) => {
         shape[field.id] = z.any().optional();
     }
   });
-  return z.object(shape);
+  return z.object(shape).extend({
+    customId: z
+      .string()
+      .optional()
+      .refine(
+        (val) => {
+          if (!val) return true;
+          return validateCustomId(val, customIdElements);
+        },
+        {
+          message: "Custom ID does not match the required format"
+        }
+      )
+  });
 };
 
-export function ItemForm({ templateFields = [], inventoryId, readOnly, item, setItem }: ItemFormProps) {
+export function ItemForm({
+  templateFields = [],
+  inventoryId,
+  readOnly,
+  item,
+  setItem,
+  enableAutoSave = false,
+  onDirtyChange,
+  onSavingChange,
+  customIdElements
+}: ItemFormProps) {
   const [uploading, setUploading] = useState(false);
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [conflictOpen, setConflictOpen] = useState(false);
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const FormSchema = generateSchema(templateFields);
-
-
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {},
+  const form = useForm({
+    resolver: zodResolver(generateSchema(templateFields, customIdElements)),
+    defaultValues: {
+      customId: item?.customId || ""
+    },
+    mode: "onChange"
   });
 
   useEffect(() => {
+    form.reset({ customId: item?.customId || "", ...form.getValues() });
+    form.control._options.resolver = zodResolver(
+      generateSchema(templateFields, customIdElements)
+    );
+  }, [customIdElements]);
+
+  useEffect(() => {
     const values = templateFields.reduce((acc, field) => {
-      const existingValue = item?.fieldValues.find((fv) => fv.fieldId === field.id)?.value;
+      const existingValue = item?.fieldValues.find(
+        (fv) => fv.fieldId === field.id
+      )?.value;
 
       switch (field.type) {
         case "boolean":
@@ -87,20 +138,76 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
       return acc;
     }, {} as Record<string, any>);
 
-    form.reset(values);
+    form.reset({ ...values, customId: item?.customId || "" });
   }, [item, templateFields, form]);
 
-  async function handleImageUpload(file?: File | null) {
+  useEffect(() => {
+    onDirtyChange?.(form.formState.isDirty);
+  }, [form.formState.isDirty, onDirtyChange]);
+
+  async function silentAutoSave() {
+    const isValid = await form.trigger();
+    if (!isValid) {
+      return;
+    }
+    const values = form.getValues();
+    const fieldValues = Object.entries(values).map(([fieldId, value]) => ({
+      fieldId,
+      value: value?.toString() || ""
+    }));
+    if (item) {
+      const res = await updateItem(item.id, {
+        fieldValues,
+        customId: values.customId,
+        version: (item as any).version
+      });
+      setItem(res);
+      form.reset(values);
+    }
+  }
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+    let canceled = false;
+
+    function scheduleNext() {
+      if (canceled) return;
+      const delay = 7000 + Math.floor(Math.random() * 3000);
+      timeoutId = window.setTimeout(async () => {
+        try {
+          if (
+            enableAutoSave &&
+            !readOnly &&
+            !uploading &&
+            item?.id &&
+            form.formState.isDirty &&
+            !isAutoSaving
+          ) {
+            setIsAutoSaving(true);
+            onSavingChange?.(true);
+            await silentAutoSave();
+          }
+        } finally {
+          setIsAutoSaving(false);
+          onSavingChange?.(false);
+          scheduleNext();
+        }
+      }, delay);
+    }
+
+    scheduleNext();
+    return () => {
+      canceled = true;
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
+  }, [enableAutoSave, readOnly, uploading, item?.id]);
+
+  async function handleFileUpload(file?: File | null) {
     if (!file) return null;
     setUploading(true);
     try {
-      const url = "https://api.cloudinary.com/v1_1/ddkih77fi/upload";
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "inventory-app");
-      const res = await fetch(url, { method: "POST", body: formData });
-      const data = await res.json();
-      return data.secure_url || null;
+      const url = await uploadFile(file);
+      return url;
     } catch (e) {
       console.error(t("itemForm.uploadFailed"), e);
       return null;
@@ -110,23 +217,42 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
   }
 
   async function onSubmit(data: Record<string, any>) {
+    if (isSubmitting) return;
     try {
-      const fieldValues = Object.entries(data).map(([fieldId, value]) => ({
-        fieldId,
-        value: value?.toString() || "",
-      }));
+      setIsSubmitting(true);
+      const { customId, ...otherFields } = data;
+      const fieldValues = Object.entries(otherFields).map(
+        ([fieldId, value]) => ({
+          fieldId,
+          value: value?.toString() || ""
+        })
+      );
 
       if (item) {
-        const res = await updateItem(item.id, { fieldValues });
-        setItem(res);
-        toast.success(t("itemForm.itemUpdatedSuccessfully"));
+        try {
+          const res = await updateItem(item.id, {
+            fieldValues,
+            customId,
+            version: (item as any).version
+          });
+          setItem(res);
+          toast.success(t("itemForm.itemUpdatedSuccessfully"));
+        } catch (e: any) {
+          if (e?.response?.status === 409) {
+            setConflictOpen(true);
+            return;
+          }
+          throw e;
+        }
       } else {
-        await createItem({ inventoryId, fieldValues }, inventoryId);
+        await createItem({ inventoryId, fieldValues, customId }, inventoryId);
         toast.success(t("itemForm.itemCreatedSuccessfully"));
-        form.reset();
+        navigate(`/inventories/${inventoryId}`);
       }
+      setIsSubmitting(false);
       form.reset();
     } catch (error) {
+      setIsSubmitting(false);
       console.error(error);
       toast.error(t("itemForm.failedToCreateItem"));
     }
@@ -136,8 +262,41 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            const target = e.target as HTMLElement;
+            if (target && target.tagName !== "TEXTAREA") {
+              e.preventDefault();
+            }
+          }
+        }}
         className="w-full space-y-6"
       >
+        {item && (
+          <FormField
+            control={form.control}
+            name="customId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t("itemForm.customIdLabel")}</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    readOnly={readOnly}
+                    disabled={readOnly}
+                    className="w-full"
+                    value={field.value as string}
+                  />
+                </FormControl>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Preview: {generateCustomIdPreview(customIdElements)}
+                </p>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
         {templateFields.map((field) => (
           <FormField
             key={field.id}
@@ -150,17 +309,21 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
                   <Tooltip>
                     <TooltipTrigger asChild>
                       {field.type === "single_line_text" ? (
-                        <Input {...formField}
+                        <Input
+                          {...formField}
                           readOnly={readOnly}
                           disabled={readOnly}
                           className="w-full"
-                          value={formField.value as string}/>
+                          value={formField.value as string}
+                        />
                       ) : field.type === "multi_line_text" ? (
-                        <Textarea {...formField}
+                        <Textarea
+                          {...formField}
                           readOnly={readOnly}
                           disabled={readOnly}
                           className="w-full"
-                          value={formField.value as string}/>
+                          value={formField.value as string}
+                        />
                       ) : field.type === "number" ? (
                         <Input
                           type="number"
@@ -169,14 +332,17 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
                           {...formField}
                           className="w-full [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           value={formField.value as number | undefined}
-                          onChange={(e) => formField.onChange(Number(e.target.value))}
+                          onChange={(e) =>
+                            formField.onChange(Number(e.target.value))
+                          }
                         />
                       ) : field.type === "boolean" ? (
                         <Switch
                           className="bg-amber-500"
                           disabled={readOnly}
                           checked={formField.value as boolean}
-                          onCheckedChange={formField.onChange} />
+                          onCheckedChange={formField.onChange}
+                        />
                       ) : field.type === "link" ? (
                         <Input
                           type="file"
@@ -186,7 +352,7 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
                           onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (!file) return;
-                            const url = await handleImageUpload(file);
+                            const url = await handleFileUpload(file);
                             if (url) formField.onChange(url);
                           }}
                         />
@@ -204,11 +370,49 @@ export function ItemForm({ templateFields = [], inventoryId, readOnly, item, set
         ))}
 
         {!readOnly && (
-          <Button className="w-full" type="submit" disabled={uploading}>
-            {uploading ? t("itemForm.uploading") : t("common.save")}
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={uploading || isSubmitting}
+          >
+            {uploading
+              ? t("itemForm.uploading")
+              : isSubmitting
+              ? t("common.saving")
+              : t("common.save")}
           </Button>
         )}
       </form>
+
+      <ConflictDialog
+        open={conflictOpen}
+        onClose={() => setConflictOpen(false)}
+        onReload={async () => {
+          try {
+            if (!item) return;
+            const latest = await fetchItemById(item.id);
+            setItem(latest);
+            const values = templateFields.reduce((acc, field) => {
+              const existingValue = latest?.fieldValues.find(
+                (fv: { fieldId: string }) => fv.fieldId === field.id
+              )?.value;
+              switch (field.type) {
+                case "boolean":
+                  acc[field.id] = String(existingValue) === "true";
+                  break;
+                case "number":
+                  acc[field.id] = existingValue ? Number(existingValue) : "";
+                  break;
+                default:
+                  acc[field.id] = existingValue ?? "";
+              }
+              return acc;
+            }, {} as Record<string, any>);
+            form.reset({ ...values, customId: latest?.customId || "" });
+            setConflictOpen(false);
+          } catch {}
+        }}
+      />
     </Form>
   );
 }

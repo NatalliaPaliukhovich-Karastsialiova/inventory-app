@@ -1,20 +1,13 @@
-import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import type { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import type { TopInventory } from "@/types";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export interface TopInventory {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  _count: {
-    item: number;
-  };
-}
-
-export function getTopColumns(t: (key: string) => string): ColumnDef<TopInventory>[] {
+export function getTopColumns(
+  t: (key: string) => string
+): ColumnDef<TopInventory>[] {
   return [
     {
       accessorKey: "title",
@@ -24,12 +17,12 @@ export function getTopColumns(t: (key: string) => string): ColumnDef<TopInventor
           className="text-left"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {t('inventory.title')}
+          {t("inventory.title")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
-        const { title, imageUrl } = row.original
+        const { title, imageUrl } = row.original;
 
         return (
           <div className="text-right font-medium flex gap-3">
@@ -41,8 +34,8 @@ export function getTopColumns(t: (key: string) => string): ColumnDef<TopInventor
               <span className="truncate font-medium">{title}</span>
             </div>
           </div>
-        )
-      },
+        );
+      }
     },
     {
       accessorKey: "_count.item",
@@ -52,12 +45,12 @@ export function getTopColumns(t: (key: string) => string): ColumnDef<TopInventor
           className="text-left"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {t('columns.count')}
+          {t("columns.count")}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
       cell: ({ row }) => {
-        const { item } = row.original._count
+        const { item } = row.original._count;
 
         return (
           <div className="text-right font-medium flex gap-3">
@@ -65,8 +58,8 @@ export function getTopColumns(t: (key: string) => string): ColumnDef<TopInventor
               <span className="truncate font-medium">{item}</span>
             </div>
           </div>
-        )
-      },
-    },
-  ]
+        );
+      }
+    }
+  ];
 }

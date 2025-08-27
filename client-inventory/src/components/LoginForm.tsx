@@ -37,7 +37,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
       toast.success(t('login.loginSuccessful'));
       navigate("/");
     } catch (error: any) {
-      toast.error(error.response?.data?.error || t('login.loginError'));
+      const codeOrMsg = error?.response?.data?.error || error?.response?.data?.message;
+      if (typeof codeOrMsg === 'string' && codeOrMsg && t) {
+        const key = `errorCodes.${codeOrMsg}`;
+        toast.error(t(key));
+        return;
+      }
+      toast.error(codeOrMsg || t('login.loginError'));
     }
   };
 

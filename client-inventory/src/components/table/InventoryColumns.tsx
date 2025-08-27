@@ -3,66 +3,7 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { User } from "./UserColumns";
-
-type CustomIdType =
-  | "fixed"
-  | "rand20"
-  | "rand32"
-  | "rand6"
-  | "rand9"
-  | "date"
-  | "seq"
-  | "guid";
-
-export type CustomIdElement = {
-  id: string;
-  type: CustomIdType;
-  separator?: string;
-  value?: string;
-};
-
-type FieldType =
-  | "single_line_text"
-  | "multi_line_text"
-  | "number"
-  | "link"
-  | "boolean";
-
-export type CustomField = {
-  id: string;
-  label: string;
-  type: FieldType;
-  description: string;
-  showInTable: boolean;
-};
-
-export type UserAccessList = {
-  userId: string;
-  user: {
-    email: string;
-    fullName: string;
-    avatar?: string;
-    avatarFallback?: string;
-  };
-};
-
-export type Inventory = {
-  id: string;
-  title: string;
-  category: string;
-  isPublic: boolean;
-  owner: User;
-  ownerId: string;
-  description: string;
-  createdAt: string;
-  imageUrl: string;
-  writeAccess?: boolean;
-  ownerOrAdmin?: boolean;
-  customIdElements?: CustomIdElement[];
-  inventoryField?: CustomField[];
-  accessList?: UserAccessList[];
-};
+import type { Inventory } from "@/types";
 
 export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
   return [
@@ -91,7 +32,7 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{title}</span>
               <span className="truncate text-xs text-muted-foreground">
-                {t("inventory.createdAt")}: {createdDate.toLocaleDateString()}
+                {t("common.createdAt")}: {createdDate.toLocaleDateString()}
               </span>
             </div>
           </div>
@@ -115,7 +56,7 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
 
         return (
           <div className="text-left font-medium flex gap-3">
-            {t(`inventory.${category}`)}
+            {t(`codelists.categories.${category}`)}
           </div>
         );
       }

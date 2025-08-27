@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type Message } from "@/services/socket/types";
 import {
   connectChatSocket,
@@ -30,13 +30,16 @@ export default function Chat({ inventoryId, readOnly }: ChatProps) {
     const socket = connectChatSocket();
 
     loadMessages(inventoryId).then((data) => {
-      setMessages(data);
+      const sorted = [...data].sort(
+        (a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setMessages(sorted);
     });
 
     joinInventoryRoom(inventoryId, user?.id as string);
 
     socket.on("newMessage", (msg) => {
-      setMessages((prev) => [...prev, msg]);
+      setMessages((prev) => [msg, ...prev]);
     });
 
     return () => {
@@ -53,8 +56,22 @@ export default function Chat({ inventoryId, readOnly }: ChatProps) {
   };
 
   return (
-    <div className="bg-muted/50 min-h-screen flex flex-col rounded-xl grow-0">
-      <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3 pb-28">
+    <div className="bg-muted/50 flex flex-col rounded-xl overflow-hidden">
+      {user && !readOnly && (
+        <div className="sticky top-0 w-full p-3 sm:p-4 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center bg-muted/50 z-10">
+          <Textarea
+            placeholder={t("chat.typeYourMessage")}
+            rows={3}
+            value={text ?? ""}
+            onChange={(e) => setText(e.target.value)}
+            className="resize-none font-mono flex-1 bg-white dark:bg-slate-800 border-slate-500"
+          />
+          <Button onClick={handleSend} className="px-4 w-full sm:w-auto">
+            {t("chat.sendMessage")}
+          </Button>
+        </div>
+      )}
+      <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-3">
         {messages.map((m) => {
           const isOwn = m.user.id === user?.id;
           return (
@@ -108,20 +125,7 @@ export default function Chat({ inventoryId, readOnly }: ChatProps) {
         })}
       </div>
 
-      {user && !readOnly && (
-        <div className="sticky bottom-0 left-0 w-full p-3 sm:p-4 flex flex-col sm:flex-row gap-2 items-stretch sm:items-center bg-muted/50">
-          <Textarea
-            placeholder={t("chat.typeYourMessage")}
-            rows={3}
-            value={text ?? ""}
-            onChange={(e) => setText(e.target.value)}
-            className="resize-none font-mono flex-1 bg-white dark:bg-slate-800 border-slate-500"
-          />
-          <Button onClick={handleSend} className="px-4 w-full sm:w-auto">
-            {t("chat.sendMessage")}
-          </Button>
-        </div>
-      )}
+
     </div>
   );
 }

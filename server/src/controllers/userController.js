@@ -3,7 +3,7 @@ import {
   updateProfileInDb,
   searchUsersInDb
 } from "../models/userModel.js";
-import prisma from "../config/db.js";
+import { sendError, mapAndSendError } from "../utils/http.js";
 
 export const getProfile = async (req, res) => {
   const user = await getUserProfile(req.user.id);
@@ -24,8 +24,8 @@ export const updateProfile = async (req, res) => {
     const user = await getUserProfile(req.user.id);
     return res.json(user);
   } catch (error) {
-    console.error("PROFILE_FAILED_UPDATE", error);
-    return res.status(500).json({ message: "PROFILE_FAILED_UPDATE" });
+    console.error(error);
+    return mapAndSendError(res, error);
   }
 };
 
@@ -40,6 +40,6 @@ export const searchUsers = async (req, res) => {
     res.json(users);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "COMMON_SERVER_ERROR" });
+    return mapAndSendError(res, err);
   }
 };

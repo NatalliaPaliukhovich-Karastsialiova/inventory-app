@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { sendError } from "../utils/http.js";
 import {
   canAccessInventory,
   canAccessItem,
@@ -11,7 +12,7 @@ export function auth(requiredRole = "user") {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       if (requiredRole === "guest") return next();
-      return res.status(401).json({ error: "AUTH_AUTHORIZATION_REQUIRED" });
+      return sendError(res, "AUTH_AUTHORIZATION_REQUIRED", 401);
     }
 
     const token = authHeader.split(" ")[1];
@@ -21,12 +22,12 @@ export function auth(requiredRole = "user") {
       req.user = decoded;
       const rolesPriority = { guest: 0, user: 1, admin: 2 };
       if (rolesPriority[decoded.role] < rolesPriority[requiredRole]) {
-        return res.status(403).json({ error: "AUTH_ACCESS_FORBIDDEN" });
+        return sendError(res, "AUTH_ACCESS_FORBIDDEN", 403);
       }
 
       next();
     } catch (err) {
-      res.status(401).json({ error: "AUTH_INVALID_TOKEN" });
+      return sendError(res, "AUTH_INVALID_TOKEN", 401);
     }
   };
 }
@@ -35,19 +36,19 @@ export const protect = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "AUTH_UNAUTHORIZED" });
+      return sendError(res, "AUTH_UNAUTHORIZED", 401);
     }
 
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await prisma.user.findUnique({ where: { id: decoded.id } });
-    if (!user) return res.status(401).json({ message: "AUTH_UNAUTHORIZED" });
+    if (!user) return sendError(res, "AUTH_UNAUTHORIZED", 401);
 
     req.user = user;
     next();
   } catch (err) {
-    return res.status(401).json({ message: "AUTH_UNAUTHORIZED" });
+    return sendError(res, "AUTH_UNAUTHORIZED", 401);
   }
 };
 
@@ -61,6 +62,7 @@ export const checkAccessByItem = async (req, res, next) => {
     }
     const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
     const isAccess = await canAccessItem(
       req.params.id,
       decoded.id,
@@ -77,7 +79,7 @@ export const checkAccessByItem = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    return res.status(401).json({ message: "AUTH_UNAUTHORIZED" });
+    return sendError(res, "AUTH_UNAUTHORIZED", 401);
   }
 };
 
@@ -108,6 +110,6 @@ export const checkAccessListByInventory = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    return res.status(401).json({ message: "AUTH_UNAUTHORIZED" });
+    return sendError(res, "AUTH_UNAUTHORIZED", 401);
   }
 };

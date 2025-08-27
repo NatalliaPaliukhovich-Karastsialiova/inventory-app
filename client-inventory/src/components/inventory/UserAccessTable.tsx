@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import type { UserAccessList } from "../table/InventoryColumns";
+import type { UserAccessList } from "@/types";
 import { searchUsers } from "@/services/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Trash } from "lucide-react";
@@ -20,8 +20,11 @@ export default function UserAccessTable({
   onChange,
   readOnly
 }: UserAccessTableProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [users, setUsers] = useState<UserAccessList[]>(initialUsers);
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<
     { id: string; fullName: string; email: string; avatar: string }[]
@@ -112,14 +115,13 @@ export default function UserAccessTable({
               }}
             />
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
               onClick={removeSelectedUsers}
               disabled={selectedIds.length === 0}
               className="flex items-center gap-1 w-full sm:w-auto justify-center"
             >
               <Trash />
-              {t("delete")}
             </Button>
           </div>
         )}

@@ -1,8 +1,11 @@
 {
   "logout": "Log out",
-  "loginSuccessful": "Login successful!",
   "menu": {
-    "login": "Login"
+    "login": "Login",
+    "home": "Home",
+    "inventories": "Inventories",
+    "adminConsole": "Admin Console",
+    "platform": "Platform"
   },
   "register": {
     "title": "Create your account",
@@ -28,7 +31,6 @@
     "orContinueWith": "Or continue with",
     "google": "Login with Google",
     "github": "Login with Github",
-    "loginSuccessful": "Login successful",
     "loginError": "Login error",
     "noAccount": "Don't have an account?",
     "signUp": "Sign up"
@@ -42,44 +44,51 @@
     "requiredFirstName": "First name is required",
     "requiredLastName": "Last name is required"
   },
-  "active": "Active",
-  "blocked": "Blocked",
-  "status": "Status",
-  "email": "Email",
-  "createdAt": "Created At",
-  "name": "Name",
-  "role": "Role",
-  "admin": "Admin",
-  "user": "User",
-  "adminConsole": "Admin Console",
-  "inventories": "Inventories",
-  "templates": "Templates",
-  "home": "Home",
-  "users": "Users",
-  "refresh": "Refresh",
-  "addUser": "Add user",
-  "searchPlaceholder": "Search by name or email",
-  "block": "Block",
-  "unblock": "Unblock",
-  "delete": "Delete",
-  "makeAdmin": "Make admin",
-  "removeAdmin": "Remove admin",
+  "inventoriesPage": {
+    "inventories": "Inventories",
+    "create": "Create",
+    "title": "Title",
+    "category": "Category",
+    "owner": "Owner",
+    "searchPlaceholder": "Search by title",
+    "createdAt ": "Created At"
+  },
   "inventory": {
     "create": "Create",
     "title": "Title",
     "category": "Category",
     "owner": "Owner",
     "searchPlaceholder": "Search by title",
+    "searchItems": "Search items...",
     "settings": {
       "title": "Title",
-      "inventoryTitlePlaceholder": "Inventory title",
       "category": "Category",
-      "selectCategoryPlaceholder": "Select a category",
       "categories": "Categories",
       "public": "Public (any authenticated user can add items)",
       "descriptionMarkdown": "Description (Markdown)",
-      "writeDescriptionPlaceholder": "Write description in Markdown...",
-      "livePreview": "Live preview will appear here..."
+      "selectCategoryPlaceholder": "Select a category",
+      "newInventory": "New Inventory",
+      "imageUploadHint": "Tip: To add a cover image, click the image area and upload a picture. Square, high‑quality images look best.",
+      "titleRequired": "Title is required",
+      "categoryRequired": "Category is required",
+      "tags": "Tags",
+      "tagsPlaceholder": "Add tags",
+      "tagsAddHint": "Type to search or create a tag",
+      "tagsMinChars": "Enter at least 2 characters",
+      "tagsDuplicate": "Tag already added",
+      "customId": "Custom ID",
+      "customIdPlaceholder": "Custom ID",
+      "customIdDescription": "Custom ID",
+      "customIdValue": "Custom ID Value",
+      "titlePlaceholder": "Enter a title for your inventory",
+      "descriptionPlaceholder": "Enter a description for your inventory",
+      "categoryPlaceholder": "Select a category",
+      "inventoryTitlePlaceholder": "Enter a title for your inventory",
+      "inventoryDescriptionPlaceholder": "Enter a description for your inventory",
+      "inventoryCategoryPlaceholder": "Select a category",
+      "writeDescriptionPlaceholder": "Enter a description for your inventory",
+      "livePreview": "Live Preview",
+      "tagsCreate": "Create"
     }
   },
   "dashboard": {
@@ -102,13 +111,47 @@
     "latestInventories": "Latest Inventories",
     "topInventories": "Top Inventories"
   },
+  "adminPage": {
+    "confirmDeleteTitle": "Delete users",
+    "confirmDeleteDescription": "Are you sure you want to delete selected users? This action cannot be undone.",
+    "delete": "Delete",
+    "block": "Block",
+    "unblock": "Unblock",
+    "makeAdmin": "Make admin",
+    "removeAdmin": "Remove admin",
+    "users": "Users",
+    "searchPlaceholder": "Search by name or email"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error:",
     "noSelection": "No selection made.",
     "actionError": "Error performing action.",
     "profileUpdated": "Profile updated!",
-    "save": "Save"
+    "save": "Save",
+    "saving": "Saving...",
+    "unsavedChanges": "Unsaved changes",
+    "allChangesSaved": "All changes saved",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "likes": "Likes",
+    "id": "Custom ID",
+    "field": "Field",
+    "average": "Average",
+    "min": "Min",
+    "max": "Max",
+    "count": "Count",
+    "delete": "Delete",
+    "active": "Active",
+    "blocked": "Blocked",
+    "admin": "Admin",
+    "user": "User",
+    "name": "Name",
+    "email": "Email",
+    "status": "Status",
+    "role": "Role",
+    "createdAt": "Created At",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "homePage": {
     "failedToLoadStats": "Failed to load stats"
@@ -118,9 +161,6 @@
     "typeYourMessage": "Type your message..."
   },
   "inventoryDetails": {
-    "newInventory": "New Inventory",
-    "noDescriptionProvided": "No description provided.",
-    "addNewItem": "Add New Item",
     "deleteInventory": "Delete Inventory",
     "confirmDeletion": "Confirm Deletion",
     "deleteInventoryConfirmation": "Are you sure you want to delete this inventory? This action cannot be undone.",
@@ -160,6 +200,48 @@
     "access": "Access",
     "statistics": "Statistics"
   },
+  "inventoryFieldBuilder": {
+    "instructions": "Drag the handle to reorder fields. Provide a clear title and an optional description (shown in forms as a hint). Choose a type for each field and enable \"Show in Table\" to display the value in the items list. Changes are saved in the inventory when you save.",
+    "addField": "Add Field",
+    "fieldLabel": "Field label",
+    "fieldType": "Field Type",
+    "fieldDescription": "Field Description",
+    "showInTable": "Show in Table"
+  },
+  "customIdBuilder": {
+    "instructions": "Arrange the elements to build your custom ID. Use fixed text, date/time masks, random bits, or sequences. You can set separators and value formatting. The resulting ID applies to new items and edits.",
+    "help": "Help",
+    "helpContent": "Supported elements: Fixed text (Unicode), 20/32-bit random (hex), 6/9-digit random, GUID, Date/time (tokens: YYYY, MM, DD, hh, mm, ss), and Sequence (optionally zero-padded). Drag elements to reorder. Removing an element is done by dragging it outside the form.",
+    "preview": "Preview",
+    "addElement": "Add element",
+    "element": "Element",
+    "elementType": "Element Type",
+    "separatorPlaceholder": "Separator (optional)",
+    "maxElementsReached": "You can add a maximum of 10 elements.",
+    "minElementsRequired": "At least one element is required.",
+    "valueNotApplicable": "Value not applicable",
+    "fixedDescription": "A piece of unchanging text. E.g., you can use Unicode emoji.",
+    "fixedValuePlaceholder": "Fixed text",
+    "guidDescription": "A globally unique identifier.",
+    "dateDescription": "An item creation date and time. E.g., you can use an abbreviated day of the week (ddd).",
+    "dateValuePlaceholder": "Format (e.g., YYYYMMDD or HHmmss)",
+    "seqDescription": "A sequential index. E.g., you can format it with leading zeros (D4) or without them (D).",
+    "seqValuePlaceholder": "Format (e.g., D3, D4)",
+    "rand6Description": "A 6-digit random number.",
+    "rand6ValuePlaceholder": "",
+    "rand9Description": "A 9-digit random number.",
+    "rand9ValuePlaceholder": "",
+    "rand20Description": "A 20-bit random value. E.g., you can format it as a six-digit decimal (D6) or 5-digit hex (X5).",
+    "rand20ValuePlaceholder": "Format (e.g., D6 or X5)",
+    "rand32Description": "A 32-bit random value. E.g., you can format it as a ten-digit decimal (D10) or 8-digit hex (X8).",
+    "rand32ValuePlaceholder": "Format (e.g., D10 or X8)",
+    "validation": {
+      "seq": "Invalid sequence format. Use D or D{{digits}} (e.g., D3).",
+      "rand20": "Invalid format. Use D6 or X5.",
+      "rand32": "Invalid format. Use D10 or X8.",
+      "date": "Invalid date format. Use dayjs tokens (e.g., YYYYMMDD, HHmmss)."
+    }
+  },
   "columns": {
     "count": "Count"
   },
@@ -167,23 +249,27 @@
     "myInventories": "My Inventories",
     "inventoriesCanWriteTo": "Inventories I can write to",
     "own": "Own",
-    "access": "Access"
+    "access": "Access",
+    "confirmDeleteTitle": "Delete inventories",
+    "confirmDeleteDescription": "Are you sure you want to delete selected inventories?"
   },
   "pieChart": {
-    "noDataAvailable": "No data available",
     "totalItems": "Total items",
     "inventories": "Inventories",
     "last24h": "Last 24h",
     "older": "Older",
     "inventoriesDistribution": "Inventories Distribution",
-    "last24hVsOlder": "Last 24h vs older inventories",
-    "showingShare": "Showing share of inventories created in the last day"
-  },
-  "sectionCards": {
-    "inventoriesLastDay": "Inventories last day"
+    "last24hVsOlder": "Last 24h vs older inventories"
   },
   "dataTable": {
     "noResults": "No results."
+  },
+  "search": {
+    "placeholder": "Search (Enter)",
+    "inventories": "Inventories",
+    "items": "Items",
+    "noResults": "No results found",
+    "resultsFor": "Results for"
   },
   "table": {
     "columns": {
@@ -208,7 +294,9 @@
     "lastName": "Last Name",
     "email": "Email",
     "role": "Role",
-    "account": "Account"
+    "account": "Account",
+    "avatarUploadHint": "Tip: To set your profile photo, click the image area and upload a picture. High‑quality, square images work best.",
+    "associatedAccounts": "Associated Accounts"
   },
   "errorCodes": {
     "AUTH_MISSING_CREDENTIALS": "Email and Password are required!",
@@ -237,26 +325,34 @@
     "INVENTORY_FAILED_DELETE": "Failed to delete inventory.",
     "INVENTORY_NO_WRITE_ACCESS": "No write access.",
     "INVENTORY_INVALID_FIELDS": "Invalid fields.",
+    "INVENTORY_INVALID_CUSTOM_ID": "Invalid Custom ID settings.",
     "ITEM_INVENTORY_ID_REQUIRED": "Inventory ID is required.",
     "CHAT_FAILED_LOAD_MESSAGES": "Failed to load messages.",
     "ITEM_NOT_FOUND": "Item not found.",
     "ITEM_FAILED_FETCH": "Failed to fetch item.",
     "ITEM_FAILED_UPDATE": "Failed to update item.",
-    "PROFILE_FAILED_UPDATE": "Failed to update profile."
+    "ITEM_INVALID_CUSTOM_ID": "Custom ID does not match the inventory format.",
+    "TAG_INVALID_NAME": "Invalid tag name.",
+    "PROFILE_FAILED_UPDATE": "Failed to update profile.",
+    "VERSION_CONFLICT": "This record was modified by someone else."
+  },
+  "conflict": {
+    "title": "Version conflict",
+    "description": "This record has been updated by someone else. Reload to get the latest version or close without saving.",
+    "close": "Close",
+    "reload": "Reload"
   },
   "itemForm": {
     "uploadFailed": "Upload failed",
     "itemUpdatedSuccessfully": "Item updated successfully!",
     "itemCreatedSuccessfully": "Item created successfully!",
     "failedToCreateItem": "Failed to create item",
-    "uploading": "Uploading..."
+    "uploading": "Uploading...",
+    "customIdLabel": "Custom ID"
   },
   "userAccessTable": {
     "inputPlaceholder": "Input name or email",
     "usersNotFound": "Users not found"
-  },
-  "sidebar": {
-    "platform": "Platform"
   },
   "codelists": {
     "categories": {
@@ -282,5 +378,13 @@
       "rand20": "20 random bits",
       "rand32": "32 random bits"
     }
+  },
+  "statistics": {
+    "numericRanges": "Numeric Ranges",
+    "itemsByCreationDate": "Items by Creation Date",
+    "exportTitle": "Export",
+    "exportCsv": "Export items to CSV",
+    "exporting": "Exporting...",
+    "topValuesByFrequency": "Top values by frequency"
   }
 }

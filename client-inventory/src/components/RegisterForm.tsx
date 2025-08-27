@@ -16,6 +16,7 @@ import { registerSchema } from "@/lib/auth";
 import type { RegisterSchema } from "@/lib/auth";
 import { useTranslation } from 'react-i18next';
 import { handleSSOLogin, registerUser } from "@/services/api";
+import { toast } from 'sonner';
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<"form">) {
   const { t } = useTranslation();
@@ -36,8 +37,14 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
     try {
       await registerUser(data.email, data.password);
       navigate("/");
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      const codeOrMsg = error?.response?.data?.error || error?.response?.data?.message;
+      if (typeof codeOrMsg === 'string' && codeOrMsg && t) {
+        const key = `errorCodes.${codeOrMsg}`;
+        toast.error(t(key));
+        return;
+      }
+      toast.error(codeOrMsg || t('register.registerError'));
     }
   }
 

@@ -1,16 +1,20 @@
-import { useAuthStore } from "@/store/authStore"
 import DashboardLayout from "@/layouts/DashboardLayout"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/table/DataTable"
+import { Checkbox } from "@/components/ui/checkbox"
+import ConfirmDialog from "@/components/ConfirmDialog"
 import { useTranslation } from "react-i18next"
 import { useEffect, useState } from "react"
-import { getColumns, type Inventory } from "@/components/table/InventoryColumns"
+import { getColumns} from "@/components/table/InventoryColumns"
 import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
-import { fetchInventories, fetchMyInventories } from "@/services/api"
+import { fetchMyInventories } from "@/services/api"
+import { deleteInventory } from "@/services/api"
 import { ProfileSettings } from "@/components/ProfileSettings"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Plus, Trash } from "lucide-react"
+import type { Inventory } from "@/types"
 
 export default function ProfilePage() {
 
@@ -18,9 +22,9 @@ export default function ProfilePage() {
   const [inventoriesWithAccess, setInventoriesWithAccess] = useState<Inventory[]>([])
   const [search, setSearch] = useState("")
   const [searchAccess, setSearchAccess] = useState("")
-  const { t, i18n } = useTranslation()
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-  const user = useAuthStore.getState().user;
+  const { t } = useTranslation()
+  const [selectedInventories, setSelectedInventories] = useState<string[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -37,7 +41,27 @@ export default function ProfilePage() {
     getData()
   }, [])
 
-  const columns = getColumns(t)
+  const columnsMyInventory = [{
+    id: "select",
+    header: ({ table }: any) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label={t("table.columns.userAccess.selectAll")}
+        onClick={(e) => e.stopPropagation()}
+      />
+    ),
+    cell: ({ row }: any) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label={t("table.columns.userAccess.selectRow")}
+        onClick={(e) => e.stopPropagation()}
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  }, ...getColumns(t)] as any
 
 
   const filteredMyInventories = myInventories.filter(
@@ -65,28 +89,56 @@ export default function ProfilePage() {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-bold">{t("profilePage.myInventories")}</h2>
             </div>
-            <div className="flex flex-wrap justify-between gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <Input
                 placeholder={t("inventory.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="max-w-sm"
               />
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => console.log(1)}
                 >
+                  <Plus />
                   {t("inventory.create")}
                 </Button>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  disabled={selectedInventories.length === 0}
+                  onClick={() => setConfirmOpen(true)}
+                >
+                  <Trash />
+                </Button>
+                <ConfirmDialog
+                  open={confirmOpen}
+                  title={t("profilePage.confirmDeleteTitle")}
+                  description={t("profilePage.confirmDeleteDescription")}
+                  onConfirm={async () => {
+                    setConfirmOpen(false)
+                    try {
+                      if (!selectedInventories.length) return;
+                      for (const invId of selectedInventories) {
+                        await deleteInventory(invId);
+                      }
+                      const resultMy = await fetchMyInventories('own')
+                      setMyInventories(resultMy)
+                      setSelectedInventories([])
+                    } catch (e) {
+                      toast.error(t("common.error"))
+                    }
+                  }}
+                  onClose={() => setConfirmOpen(false)}
+                />
               </div>
             </div>
             <DataTable
-              columns={columns}
+              columns={columnsMyInventory}
               data={filteredMyInventories}
               showPagination={true}
-              onSelectionChange={(ids: string[]) => setSelectedUsers(ids)}
+              onSelectionChange={(ids: string[]) => setSelectedInventories(ids)}
               onRowClick={(row) => navigate(`/inventories/${row.id}`)}
             />
           </div>
@@ -105,10 +157,9 @@ export default function ProfilePage() {
               />
             </div>
             <DataTable
-              columns={columns}
+              columns={getColumns(t)}
               data={filteredInventoriesWrite}
               showPagination={true}
-              onSelectionChange={(ids: string[]) => setSelectedUsers(ids)}
               onRowClick={(row) => navigate(`/inventories/${row.id}`)}
             />
           </div>

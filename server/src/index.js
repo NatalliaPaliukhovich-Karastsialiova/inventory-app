@@ -12,6 +12,8 @@ import chatSocket from "./sockets/chatSocket.js";
 import itemRoutes from "./routes/itemRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import configRouters from "./routes/configRoutes.js";
+import tagsRoutes from "./routes/tagsRoutes.js";
+import searchRoutes from "./routes/searchRoutes.js";
 
 import "./config/passport/google.js";
 import "./config/passport/github.js";
@@ -34,6 +36,8 @@ app.use("/api/v1/inventories", inventoryRoutes);
 app.use("/api/v1/items", itemRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/config", configRouters);
+app.use("/api/v1/tags", tagsRoutes);
+app.use("/api/v1/search", searchRoutes);
 
 io.on("connection", (socket) => {
   chatSocket(io, socket);

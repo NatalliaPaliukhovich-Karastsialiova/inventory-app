@@ -26,12 +26,39 @@ export const validatePassword = async (plain, hashed) =>
 export const isBlocked = (user) => user?.status === "blocked";
 
 export const getUserProfile = async (id) => {
-  const user = await prisma.user.findUnique({ where: { id: id } });
-  user.token = generateToken(user);
-  return user;
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      givenName: true,
+      familyName: true,
+      avatar: true,
+      avatarFallback: true,
+      role: true,
+      status: true,
+      createdAt: true,
+      accounts: { select: { provider: true } }
+    }
+  });
+  if (!user) return null;
+  return { ...user, token: generateToken(user) };
 };
 
-export const readAllUsers = () => prisma.user.findMany();
+export const readAllUsers = () =>
+  prisma.user.findMany({
+    select: {
+      id: true,
+      email: true,
+      fullName: true,
+      avatar: true,
+      avatarFallback: true,
+      role: true,
+      status: true,
+      createdAt: true
+    }
+  });
 
 export const batchDeleteUsers = (ids) =>
   prisma.$transaction([

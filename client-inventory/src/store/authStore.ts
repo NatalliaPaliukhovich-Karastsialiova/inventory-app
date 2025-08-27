@@ -13,6 +13,7 @@ type User = {
   role: string
   status: string
   createdAt: string
+  accounts?: { provider: 'google' | 'github' }[]
 }
 
 type AuthState = {

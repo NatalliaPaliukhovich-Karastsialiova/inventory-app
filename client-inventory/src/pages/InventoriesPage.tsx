@@ -6,18 +6,18 @@ import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
 import {
   getColumns,
-  type Inventory
 } from "@/components/table/InventoryColumns";
 import { fetchInventories } from "@/services/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
+import type { Inventory } from "@/types";
 
 export default function InventoriesPage() {
   const [data, setData] = useState<Inventory[]>([]);
   const [search, setSearch] = useState("");
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const user = useAuthStore.getState().user;
   const navigate = useNavigate();
@@ -44,7 +44,7 @@ export default function InventoriesPage() {
     <DashboardLayout>
       <div className="container mx-auto py-1 space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">{t("inventories")}</h2>
+          <h2 className="text-2xl font-bold">{t("inventoriesPage.inventories")}</h2>
         </div>
         <div className="flex justify-between gap-2">
           <Input
@@ -60,6 +60,7 @@ export default function InventoriesPage() {
               onClick={() => navigate(`/inventories/new`)}
             >
               <Plus className="w-4 h-4" />
+              {t("inventory.create")}
             </Button>
           )}
         </div>

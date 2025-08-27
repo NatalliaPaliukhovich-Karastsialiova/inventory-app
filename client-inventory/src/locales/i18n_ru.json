@@ -1,6 +1,12 @@
 {
   "logout": "Выйти",
-  "loginSuccessful": "Успешный вход!",
+  "menu": {
+    "login": "Войти",
+    "home": "Главная",
+    "inventories": "Инвентари",
+    "adminConsole": "Консоль администратора",
+    "platform": "Платформа"
+  },
   "register": {
     "title": "Создайте аккаунт",
     "subtitle": "Введите свой email ниже, чтобы создать аккаунт",
@@ -39,45 +45,51 @@
     "requiredFirstName": "Имя обязательно",
     "requiredLastName": "Фамилия обязательна"
   },
-  "adminConsole": "Административная консоль",
-  "inventories": "Инвентарь",
-  "templates": "Шаблоны",
-  "home": "Главная",
-  "users": "Пользователи",
-  "refresh": "Обновить",
-  "addUser": "Добавить пользователя",
-  "searchPlaceholder": "Поиск по имени или email",
-  "name": "Имя",
-  "role": "Роль",
-  "admin": "Админ",
-  "user": "Пользователь",
-  "email": "Почта",
-  "status": "Статус",
-  "createdAt": "Создан",
-  "active": "Активен",
-  "blocked": "Заблокирован",
-  "block": "Заблокировать",
-  "unblock": "Разблокировать",
-  "delete": "Удалить",
-  "makeAdmin": "Сделать админом",
-  "removeAdmin": "Убрать из админов",
-  "create": "Создать",
+  "inventoriesPage": {
+    "inventories": "Инвентари",
+    "create": "Создать",
+    "title": "Название",
+    "category": "Категория",
+    "owner": "Владелец",
+    "searchPlaceholder": "Поиск по названию",
+    "createdAt": "Дата создания"
+  },
   "inventory": {
     "create": "Создать",
     "title": "Название",
     "category": "Категория",
     "owner": "Владелец",
     "searchPlaceholder": "Поиск по названию",
+    "searchItems": "Поиск предметов...",
     "settings": {
       "title": "Название",
-      "inventoryTitlePlaceholder": "Название инвентаря",
       "category": "Категория",
-      "selectCategoryPlaceholder": "Выберите категорию",
       "categories": "Категории",
       "public": "Публичный (любой аутентифицированный пользователь может добавлять предметы)",
       "descriptionMarkdown": "Описание (Markdown)",
-      "writeDescriptionPlaceholder": "Напишите описание в Markdown...",
-      "livePreview": "Предварительный просмотр появится здесь..."
+      "selectCategoryPlaceholder": "Выберите категорию",
+      "newInventory": "Новый инвентарь",
+      "imageUploadHint": "Подсказка: чтобы добавить обложку, нажмите на область изображения и загрузите картинку. Лучше всего подходят квадратные изображения хорошего качества.",
+      "titleRequired": "Название обязательно",
+      "categoryRequired": "Категория обязательна",
+      "tags": "Теги",
+      "tagsPlaceholder": "Добавьте теги",
+      "tagsAddHint": "Введите для поиска или создания тега",
+      "tagsMinChars": "Введите минимум 2 символа",
+      "tagsDuplicate": "Тег уже добавлен",
+      "customId": "Пользовательский ID",
+      "customIdPlaceholder": "Пользовательский ID",
+      "customIdDescription": "Пользовательский ID",
+      "customIdValue": "Значение пользовательского ID",
+      "titlePlaceholder": "Введите название для вашего инвентаря",
+      "descriptionPlaceholder": "Введите описание для вашего инвентаря",
+      "categoryPlaceholder": "Выберите категорию",
+      "inventoryTitlePlaceholder": "Введите название для вашего инвентаря",
+      "inventoryDescriptionPlaceholder": "Введите описание для вашего инвентаря",
+      "inventoryCategoryPlaceholder": "Выберите категорию",
+      "writeDescriptionPlaceholder": "Введите описание для вашего инвентаря",
+      "livePreview": "Живой предварительный просмотр",
+      "tagsCreate": "Создать"
     }
   },
   "dashboard": {
@@ -96,7 +108,20 @@
       "title": "Всего пользователей",
       "subtitle": "Сообщество растёт",
       "description": "Зарегистрированные участники платформы"
-    }
+    },
+    "latestInventories": "Последние инвентари",
+    "topInventories": "Популярные инвентари"
+  },
+  "adminPage": {
+    "confirmDeleteTitle": "Удаление пользователей",
+    "confirmDeleteDescription": "Вы уверены, что хотите удалить выбранных пользователей? Это действие нельзя отменить.",
+    "delete": "Удалить",
+    "block": "Заблокировать",
+    "unblock": "Разблокировать",
+    "makeAdmin": "Сделать администратором",
+    "removeAdmin": "Убрать администратора",
+    "users": "Пользователи",
+    "searchPlaceholder": "Поиск по имени или email"
   },
   "common": {
     "loading": "Загрузка...",
@@ -104,7 +129,30 @@
     "noSelection": "Ничего не выбрано.",
     "actionError": "Ошибка при выполнении действия.",
     "profileUpdated": "Профиль обновлен!",
-    "save": "Сохранить"
+    "save": "Сохранить",
+    "saving": "Сохранение...",
+    "unsavedChanges": "Есть несохранённые изменения",
+    "allChangesSaved": "Все изменения сохранены",
+    "sessionExpired": "Сессия истекла. Пожалуйста, войдите снова.",
+    "likes": "Лайки",
+    "id": "Пользовательский Ид",
+    "field": "Поле",
+    "average": "Среднее",
+    "min": "Мин.",
+    "max": "Макс.",
+    "count": "Количество",
+    "name": "Имя",
+    "email": "Эл. почта",
+    "status": "Статус",
+    "role": "Роль",
+    "createdAt": "Дата создания",
+    "active": "Активный",
+    "blocked": "Заблокированный",
+    "admin": "Администратор",
+    "user": "Пользователь",
+    "delete": "Удалить",
+    "cancel": "Отмена",
+    "confirm": "Подтвердить"
   },
   "homePage": {
     "failedToLoadStats": "Не удалось загрузить статистику"
@@ -114,9 +162,6 @@
     "typeYourMessage": "Введите ваше сообщение..."
   },
   "inventoryDetails": {
-    "newInventory": "Новый инвентарь",
-    "noDescriptionProvided": "Описание отсутствует.",
-    "addNewItem": "Добавить новый предмет",
     "deleteInventory": "Удалить инвентарь",
     "confirmDeletion": "Подтвердить удаление",
     "deleteInventoryConfirmation": "Вы уверены, что хотите удалить этот инвентарь? Это действие нельзя отменить.",
@@ -156,30 +201,76 @@
     "access": "Доступ",
     "statistics": "Статистика"
   },
+  "inventoryFieldBuilder": {
+    "instructions": "Перетаскивайте ручку для изменения порядка. Укажите понятное название и необязательное описание (отображается как подсказка в формах). Выберите тип поля и включите \"Показывать в таблице\", чтобы значение отображалось в списке предметов. Изменения сохраняются при сохранении инвентаря.",
+    "addField": "Добавить поле",
+    "fieldLabel": "Название поля",
+    "fieldType": "Тип поля",
+    "fieldDescription": "Описание поля",
+    "showInTable": "Показывать в таблице"
+  },
+  "customIdBuilder": {
+    "instructions": "Соберите формат пользовательского ID, расположив элементы. Используйте фиксированный текст, маски даты/времени, случайные числа или последовательность. Можно задать разделители и формат значения. Результат применяется к новым и редактируемым элементам.",
+    "help": "Справка",
+    "helpContent": "Поддерживаемые элементы: фиксированный текст (Unicode), случайные 20/32-бит (hex), случайные 6/9-значные, GUID, дата/время (токены: YYYY, MM, DD, hh, mm, ss) и последовательность (с нулями слева при необходимости). Перетаскивайте для изменения порядка. Удаляйте, перетаскивая за пределы формы.",
+    "preview": "Превью",
+    "addElement": "Добавить элемент",
+    "element": "Элемент",
+    "elementType": "Тип элемента",
+    "separatorPlaceholder": "Разделитель (необязательно)",
+    "maxElementsReached": "Вы можете добавить максимум 10 элементов.",
+    "minElementsRequired": "Должен быть хотя бы один элемент.",
+    "valueNotApplicable": "Значение неприменимо",
+    "fixedDescription": "Неизменяемый текст. Например, можно использовать эмодзи Unicode.",
+    "fixedValuePlaceholder": "Фиксированный текст",
+    "guidDescription": "Глобально уникальный идентификатор.",
+    "dateDescription": "Дата и время создания элемента. Например, можно использовать сокращенный день недели (ddd).",
+    "dateValuePlaceholder": "Формат (напр. YYYYMMDD или HHmmss)",
+    "seqDescription": "Последовательный индекс. Например, можно отформатировать его с ведущими нулями (D4) или без них (D).",
+    "seqValuePlaceholder": "Формат (напр. D3, D4)",
+    "rand6Description": "6-значное случайное число.",
+    "rand6ValuePlaceholder": "",
+    "rand9Description": "9-значное случайное число.",
+    "rand9ValuePlaceholder": "",
+    "rand20Description": "20-битное случайное значение. Например, можно отформатировать его как 6-значное десятичное (D6) или 5-значное шестнадцатеричное (X5).",
+    "rand20ValuePlaceholder": "Формат (напр. D6 или X5)",
+    "rand32Description": "32-битное случайное значение. Например, можно отформатировать его как 10-значное десятичное (D10) или 8-значное шестнадцатеричное (X8).",
+    "rand32ValuePlaceholder": "Формат (напр. D10 или X8)",
+    "validation": {
+      "seq": "Неверный формат последовательности. Используйте D или D{{digits}} (напр. D3).",
+      "rand20": "Неверный формат. Используйте D6 или X5.",
+      "rand32": "Неверный формат. Используйте D10 или X8.",
+      "date": "Неверный формат даты. Используйте токены dayjs (напр. YYYYMMDD, HHmmss)."
+    }
+  },
   "columns": {
     "count": "Количество"
   },
   "profilePage": {
     "myInventories": "Мои инвентари",
-    "inventoriesCanWriteTo": "Инвентари, в которые я могу писать",
+    "inventoriesCanWriteTo": "Инвентари, в которые у меня есть доступ на запись",
     "own": "Мои",
-    "access": "Доступ"
+    "access": "Доступ",
+    "confirmDeleteTitle": "Удаление инвентарей",
+    "confirmDeleteDescription": "Вы уверены, что хотите удалить выбранные инвентари?"
   },
   "pieChart": {
-    "noDataAvailable": "Нет данных",
     "totalItems": "Всего предметов",
     "inventories": "Инвентарь",
     "last24h": "Последние 24 часа",
     "older": "Старые",
     "inventoriesDistribution": "Распределение инвентаря",
-    "last24hVsOlder": "Последние 24 часа против старых инвентарей",
-    "showingShare": "Показана доля инвентаря, созданного за последний день"
-  },
-  "sectionCards": {
-    "inventoriesLastDay": "Инвентари за последний день"
+    "last24hVsOlder": "Последние 24 часа против старых инвентарей"
   },
   "dataTable": {
     "noResults": "Нет результатов."
+  },
+  "search": {
+    "placeholder": "Поиск (Enter)",
+    "inventories": "Инвентари",
+    "items": "Предметы",
+    "noResults": "Ничего не найдено",
+    "resultsFor": "Результаты для"
   },
   "table": {
     "columns": {
@@ -202,9 +293,11 @@
   "profile": {
     "firstName": "Имя",
     "lastName": "Фамилия",
-    "email": "Электронная почта",
+    "email": "Эл. почта",
     "role": "Роль",
-    "account": "Аккаунт"
+    "account": "Аккаунт",
+    "avatarUploadHint": "Подсказка: чтобы установить фото профиля, нажмите на область изображения и загрузите картинку. Лучше всего подходят квадратные изображения хорошего качества.",
+    "associatedAccounts": "Связанные аккаунты"
   },
   "errorCodes": {
     "AUTH_MISSING_CREDENTIALS": "Требуется Email и пароль!",
@@ -233,26 +326,34 @@
     "INVENTORY_FAILED_DELETE": "Не удалось удалить инвентарь.",
     "INVENTORY_NO_WRITE_ACCESS": "Нет доступа на запись.",
     "INVENTORY_INVALID_FIELDS": "Неверные поля.",
+    "INVENTORY_INVALID_CUSTOM_ID": "Некорректные настройки пользовательского ID.",
     "ITEM_INVENTORY_ID_REQUIRED": "Требуется ID инвентаря.",
     "CHAT_FAILED_LOAD_MESSAGES": "Не удалось загрузить сообщения.",
     "ITEM_NOT_FOUND": "Предмет не найден.",
     "ITEM_FAILED_FETCH": "Не удалось получить предмет.",
     "ITEM_FAILED_UPDATE": "Не удалось обновить предмет.",
-    "PROFILE_FAILED_UPDATE": "Не удалось обновить профиль."
+    "ITEM_INVALID_CUSTOM_ID": "Пользовательский ID не соответствует формату инвентаря.",
+    "TAG_INVALID_NAME": "Некорректное имя тега.",
+    "PROFILE_FAILED_UPDATE": "Не удалось обновить профиль.",
+    "VERSION_CONFLICT": "Эта запись была изменена кем-то ещё."
+  },
+  "conflict": {
+    "title": "Конфликт версий",
+    "description": "Запись была обновлена другим пользователем. Обновите данные или закройте без сохранения.",
+    "close": "Закрыть",
+    "reload": "Обновить"
   },
   "itemForm": {
     "uploadFailed": "Загрузка не удалась",
     "itemUpdatedSuccessfully": "Элемент успешно обновлен!",
     "itemCreatedSuccessfully": "Элемент успешно создан!",
     "failedToCreateItem": "Не удалось создать элемент",
-    "uploading": "Загрузка..."
+    "uploading": "Загрузка...",
+    "customIdLabel": "Пользовательский ID"
   },
   "userAccessTable": {
     "inputPlaceholder": "Введите имя или email",
     "usersNotFound": "Пользователи не найдены"
-  },
-  "sidebar": {
-    "platform": "Платформа"
   },
   "codelists": {
     "categories": {
@@ -278,5 +379,13 @@
       "rand20": "20 случайных бит",
       "rand32": "32 случайных бита"
     }
+  },
+  "statistics": {
+    "numericRanges": "Числовые диапазоны",
+    "itemsByCreationDate": "Предметы по дате создания",
+    "exportTitle": "Экспорт",
+    "exportCsv": "Экспорт предметов в CSV",
+    "exporting": "Экспорт...",
+    "topValuesByFrequency": "Наиболее частые значения"
   }
 }

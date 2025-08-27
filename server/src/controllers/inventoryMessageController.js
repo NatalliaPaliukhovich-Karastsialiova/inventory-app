@@ -1,4 +1,6 @@
 import prisma from "../config/db.js";
+import { mapAndSendError, sendError } from "../utils/http.js";
+import { z } from "zod";
 
 export const createInventoryMessage = async ({ inventoryId, userId, text }) => {
   const message = await prisma.inventoryMessage.create({
@@ -51,14 +53,20 @@ export async function loadMessages(req, res) {
   const { limit, cursor } = req.query;
 
   try {
+    const schema = z.object({
+      limit: z.coerce.number().int().min(1).max(200).optional(),
+      cursor: z.string().optional()
+    });
+    const parsed = schema.safeParse({ limit, cursor });
+    if (!parsed.success) return sendError(res, "CHAT_FAILED_LOAD_MESSAGES", 400);
     const messages = await getInventoryMessages(
       id,
-      parseInt(limit) || 50,
-      cursor || null
+      parsed.data.limit || 50,
+      parsed.data.cursor || null
     );
     res.json(messages);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "CHAT_FAILED_LOAD_MESSAGES" });
+    return mapAndSendError(res, err);
   }
 }

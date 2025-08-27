@@ -1,4 +1,5 @@
 import { getDashboardStats } from "../models/dashboardModel.js";
+import { mapAndSendError } from "../utils/http.js";
 
 export async function getDashboardData (req, res) {
   try {
@@ -6,6 +7,6 @@ export async function getDashboardData (req, res) {
     res.json(data);
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
-    res.status(500).json({ error: 'COMMON_SERVER_ERROR' });
+    return mapAndSendError(res, error);
   }
 };

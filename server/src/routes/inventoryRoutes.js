@@ -8,13 +8,15 @@ import {
   getInventoryByIdExternal,
   myListInventories,
   createItem,
-  getItems
+  getItems,
+  getInventoryStats
 } from "../controllers/inventoryController.js";
 import {
   auth,
   checkAccessListByInventory
 } from "../middleware/authMiddleware.js";
 import { loadMessages } from "../controllers/inventoryMessageController.js";
+import { batchDeleteItems } from "../controllers/itemController.js";
 
 const router = Router();
 
@@ -32,6 +34,8 @@ router.patch("/:id", auth("user"), checkAccessListByInventory, updateInventory);
 router.delete("/:id", auth("user"), deleteInventory);
 router.post("/:inventoryId/items", auth("user"), createItem);
 router.get("/:inventoryId/items", getItems);
+router.get("/:id/stats", getInventoryStats);
+router.delete("/:inventoryId/items", auth("user"), batchDeleteItems);
 router.get("/:id/messages", loadMessages);
 
 export default router;

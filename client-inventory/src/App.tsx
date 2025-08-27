@@ -14,6 +14,7 @@ import {
 } from "./components/AuthRedirectRoute";
 import InventoryDetailsPage from "./pages/InventoryDetailsPage";
 import ItemPage from "./pages/ItemPage";
+import SearchPage from "./pages/SearchPage";
 import { useCodeListsStore } from "@/store/codeListsStore";
 import { useEffect } from "react";
 
@@ -86,6 +87,7 @@ export default function App() {
             }
           />
           <Route path="/inventories/:id/items/:itemId" element={<ItemPage />} />
+          <Route path="/search" element={<SearchPage />} />
         </Routes>
       </Router>
     </ThemeProvider>

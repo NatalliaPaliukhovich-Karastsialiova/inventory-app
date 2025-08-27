@@ -1,4 +1,6 @@
 import {batchDeleteUsers, readAllUsers, batchUpdateUsers} from "../models/userModel.js";
+import { sendError, mapAndSendError } from "../utils/http.js";
+import { z } from "zod";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -6,20 +8,19 @@ export const getAllUsers = async (req, res) => {
     res.json(users);
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: "COMMON_SERVER_ERROR" });
+    return mapAndSendError(res, e);
   }
 }
 
 export const batchUsers = async (req, res) => {
   try {
-    const { ids, action } = req.body;
-
-    if (!Array.isArray(ids) || !ids.length) {
-      return res.status(400).json({ error: "ADMIN_IDS_ARRAY_REQUIRED" });
-    }
-    if (!action) {
-      return res.status(400).json({ error: "ADMIN_ACTION_REQUIRED" });
-    }
+    const schema = z.object({
+      ids: z.array(z.string().min(1)).min(1),
+      action: z.enum(["delete", "block", "unblock", "make-admin", "remove-admin"])
+    });
+    const parsed = schema.safeParse(req.body || {});
+    if (!parsed.success) return sendError(res, "ADMIN_ACTION_REQUIRED", 400);
+    const { ids, action } = parsed.data;
 
     if (action === "delete") {
       await batchDeleteUsers(ids);
@@ -34,14 +35,12 @@ export const batchUsers = async (req, res) => {
     };
 
     const updateData = actionMap[action];
-    if (!updateData) {
-      return res.status(400).json({ error: "ADMIN_UNKNOWN_ACTION" });
-    }
+    if (!updateData) return sendError(res, "ADMIN_UNKNOWN_ACTION", 400);
 
     await batchUpdateUsers(ids, updateData);
     res.json({ message: "ADMIN_ACTION_APPLIED_SUCCESS" });
   } catch (e) {
     console.log(e)
-    res.status(500).json({ error: "COMMON_SERVER_ERROR" });
+    return mapAndSendError(res, e);
   }
 };

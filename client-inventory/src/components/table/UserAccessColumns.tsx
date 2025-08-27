@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import type { UserAccessList } from "./InventoryColumns"
+import type { UserAccessList } from "@/types"
 
 export function getColumns(t: (key: string) => string): ColumnDef<UserAccessList>[] {
   return [
@@ -37,7 +37,7 @@ export function getColumns(t: (key: string) => string): ColumnDef<UserAccessList
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {t('name')}
+          {t('common.name')}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),
@@ -64,7 +64,7 @@ export function getColumns(t: (key: string) => string): ColumnDef<UserAccessList
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          {t('email')}
+          {t('common.email')}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       ),

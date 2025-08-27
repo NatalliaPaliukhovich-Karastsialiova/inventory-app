@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,26 +26,14 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripHorizontal, X } from "lucide-react";
+import { GripVertical, Info } from "lucide-react";
 import { Switch } from "../ui/switch";
 import { Label } from "@radix-ui/react-label";
 import { useCodeListsStore } from "@/store/codeListsStore";
 import { useTranslation } from "react-i18next";
-
-type FieldType =
-  | "single_line_text"
-  | "multi_line_text"
-  | "number"
-  | "link"
-  | "boolean";
-
-export interface CustomField {
-  id: string;
-  label: string;
-  type: FieldType;
-  description: string;
-  showInTable: boolean;
-}
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import type { FieldType, CustomField } from "@/types";
 
 interface InventoryFieldBuilderProps {
   initialFields?: CustomField[];
@@ -58,14 +46,18 @@ export function InventoryFieldBuilder({
   onChange,
   readOnly
 }: InventoryFieldBuilderProps) {
+  const { t } = useTranslation();
   const [fields, setFields] = useState<CustomField[]>(initialFields);
+  useEffect(() => {
+    setFields(initialFields);
+  }, [initialFields]);
   const listRef = useRef<HTMLDivElement>(null);
 
   const sensors = useSensors(useSensor(PointerSensor));
 
   function addField() {
     const newField: CustomField = {
-      id: "",
+      id: crypto.randomUUID(),
       label: "",
       type: "single_line_text",
       description: "",
@@ -122,6 +114,12 @@ export function InventoryFieldBuilder({
 
   return (
     <div>
+      <div className="mb-4 p-3 rounded-md bg-muted/50 flex gap-3 items-start">
+        <Info className="h-4 w-4 mt-0.5 text-muted-foreground" />
+        <div className="text-sm text-muted-foreground">
+          {t("inventoryFieldBuilder.instructions")}
+        </div>
+      </div>
       <DndContext
         sensors={readOnly ? undefined : sensors}
         collisionDetection={closestCenter}
@@ -132,13 +130,14 @@ export function InventoryFieldBuilder({
             items={fields.map((f) => f.id)}
             strategy={verticalListSortingStrategy}
           >
-            {fields.map((field) => (
+            {fields.map((field, index) => (
               <SortableField
                 key={field.id}
                 field={field}
                 updateField={updateField}
                 removeField={removeField}
                 readOnly={readOnly}
+                index={index + 1}
               />
             ))}
           </SortableContext>
@@ -147,7 +146,7 @@ export function InventoryFieldBuilder({
 
       {!readOnly && (
         <Button className="mt-4 w-full" onClick={addField}>
-          Add Field
+          {t("inventoryFieldBuilder.addField")}
         </Button>
       )}
     </div>
@@ -159,11 +158,17 @@ interface SortableFieldProps {
   updateField: (id: string, updated: Partial<CustomField>) => void;
   removeField: (id: string) => void;
   readOnly: boolean;
+  index: number;
 }
 
-function SortableField({ field, updateField, readOnly }: SortableFieldProps) {
+function SortableField({
+  field,
+  updateField,
+  readOnly,
+  index
+}: SortableFieldProps) {
   const { codeLists } = useCodeListsStore();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: field.id });
@@ -174,70 +179,78 @@ function SortableField({ field, updateField, readOnly }: SortableFieldProps) {
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="flex flex-col sm:flex-row gap-3 items-start sm:items-center w-full"
+    <Card
+      ref={setNodeRef as any}
+      style={style as any}
+      className="w-full p-4 mb-3"
     >
-      {!readOnly && (
-        <div
-          className="cursor-move p-2"
-          aria-label="Drag handle"
-          {...attributes}
-          {...listeners}
-        >
-          <GripHorizontal />
+      <div className="flex items-center gap-3 mb-3">
+        {!readOnly && (
+          <div
+            className="cursor-move p-2"
+            aria-label="Drag handle"
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical />
+          </div>
+        )}
+        <Badge variant="secondary">#{index}</Badge>
+        <div className="text-sm text-muted-foreground">
+          {t("inventoryDetails.fields")}
         </div>
-      )}
-
-      <Input
-        placeholder="Field label"
-        value={field.label}
-        onChange={(e) => updateField(field.id, { label: e.target.value })}
-        className="w-full sm:flex-grow"
-        readOnly={readOnly}
-      />
-
-      <Input
-        placeholder="Field Description"
-        value={field.description}
-        onChange={(e) => updateField(field.id, { description: e.target.value })}
-        className="w-full sm:flex-grow"
-        readOnly={readOnly}
-      />
-
-      <Select
-        value={field.type}
-        onValueChange={(value) =>
-          updateField(field.id, { type: value as FieldType })
-        }
-        disabled={readOnly}
-      >
-        <SelectTrigger className="w-full sm:w-[450px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Field Type</SelectLabel>
-            {codeLists?.fieldTypes.map((fieldType) => (
-              <SelectItem key={fieldType} value={fieldType}>
-                {t(`codelists.fieldTypes.${fieldType}`)}
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-
-      <div className="flex items-center gap-2 shrink-0">
-        <Switch
-          checked={field.showInTable}
-          onCheckedChange={(value) =>
-            updateField(field.id, { showInTable: value })
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <Input
+          placeholder={t("inventoryFieldBuilder.fieldLabel")}
+          value={field.label}
+          onChange={(e) => updateField(field.id, { label: e.target.value })}
+          className="w-full"
+          readOnly={readOnly}
+        />
+        <Select
+          value={field.type}
+          onValueChange={(value) =>
+            updateField(field.id, { type: value as FieldType })
           }
           disabled={readOnly}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectLabel>{t("inventoryFieldBuilder.fieldType")}</SelectLabel>
+              {codeLists?.fieldTypes.map((fieldType) => (
+                <SelectItem key={fieldType} value={fieldType}>
+                  {t(`codelists.fieldTypes.${fieldType}`)}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+        <Input
+          placeholder={t("inventoryFieldBuilder.fieldDescription")}
+          value={field.description}
+          onChange={(e) =>
+            updateField(field.id, { description: e.target.value })
+          }
+          className="w-full"
+          readOnly={readOnly}
         />
-        <Label htmlFor="airplane-mode">Show in Table</Label>
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={field.showInTable}
+            onCheckedChange={(value) =>
+              updateField(field.id, { showInTable: value })
+            }
+            disabled={readOnly}
+          />
+          <Label htmlFor="airplane-mode">
+            {t("inventoryFieldBuilder.showInTable")}
+          </Label>
+        </div>
       </div>
-    </div>
+    </Card>
   );
 }

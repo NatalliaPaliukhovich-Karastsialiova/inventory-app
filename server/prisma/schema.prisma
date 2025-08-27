@@ -30,6 +30,7 @@ model User {
   inventories       Inventory[]         @relation("InventoryOwner")
   inventoryAccesses InventoryAccess[]   @relation("InventoryAccessUser")
   inventoryMessages InventoryMessage[]
+  likes             ItemLike[]
 }
 
 model Account {
@@ -90,18 +91,21 @@ model Inventory {
 
   @@index([title])
   @@index([category])
+  @@index([description])
 }
 
 model Tag {
   id    String              @id @default(uuid())
   name  String              @unique
   items InventoryTagOnItem[]
+
+  @@index([name])
 }
 
 model InventoryTagOnItem {
   inventoryId String
   tagId       String
-  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
   tag         Tag       @relation(fields: [tagId], references: [id])
 
   @@id([inventoryId, tagId])
@@ -110,7 +114,7 @@ model InventoryTagOnItem {
 model InventoryAccess {
   inventoryId String
   userId      String
-  inventory   Inventory         @relation(fields: [inventoryId], references: [id])
+  inventory   Inventory         @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
   user        User              @relation("InventoryAccessUser", fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([inventoryId, userId])
@@ -119,7 +123,7 @@ model InventoryAccess {
 model InventoryField {
   id          String       @id @default(uuid())
   inventoryId String
-  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
   label       String
   description String?
   type        FieldType
@@ -139,7 +143,7 @@ enum FieldType {
 model CustomIdElement {
   id           String    @id @default(uuid())
   inventoryId  String
-  inventory    Inventory @relation(fields: [inventoryId], references: [id])
+  inventory    Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
   orderIndex   Int
   type         IdSeqType
   value        String
@@ -162,13 +166,20 @@ enum IdSeqType {
 
 model Item {
   id          String     @id @default(uuid())
+  customId    String
+
   inventoryId String
   inventory   Inventory  @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+  version     Int        @default(1)
 
   fieldValues ItemFieldValue[]
+  likes       ItemLike[]
+
+  @@unique([inventoryId, customId])
+  @@index([customId])
 }
 
 model ItemFieldValue {
@@ -187,7 +198,7 @@ model ItemFieldValue {
 model InventoryMessage {
   id          String    @id @default(uuid())
   inventoryId String
-  inventory   Inventory @relation(fields: [inventoryId], references: [id])
+  inventory   Inventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
 
   userId      String
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -196,5 +207,19 @@ model InventoryMessage {
   createdAt   DateTime  @default(now())
 
   @@index([inventoryId])
+  @@index([userId])
+}
+
+model ItemLike {
+  id        String   @id @default(uuid())
+  itemId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, userId])
+  @@index([itemId])
   @@index([userId])
 }

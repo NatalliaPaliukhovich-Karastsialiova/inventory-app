@@ -1,18 +1,15 @@
-import { getUserProfile, findUserByEmail, validatePassword, isBlocked, createUser } from "../models/userModel.js";
+import { getUserProfile, findUserByEmail, validatePassword, isBlocked, createUser, updateUserPassword } from "../models/userModel.js";
+import { sendError, mapAndSendError } from "../utils/http.js";
 
 export const registerWebUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "AUTH_MISSING_CREDENTIALS" });
-    }
+    if (!email || !password) return sendError(res, "AUTH_MISSING_CREDENTIALS", 400);
 
     const existingUser = await findUserByEmail(email);
 
-    if (existingUser && existingUser.password) {
-      return res.status(400).json({ error: "AUTH_EMAIL_ALREADY_IN_USE" });
-    }
+    if (existingUser && existingUser.password) return sendError(res, "AUTH_EMAIL_ALREADY_IN_USE", 400);
 
     let currentUser;
     if (!existingUser) {
@@ -24,7 +21,7 @@ export const registerWebUser = async (req, res) => {
     const profile = await getUserProfile(currentUser.id)
     res.json(profile);
   } catch (err) {
-    res.status(500).json({ error: "AUTH_CREATE_USER_ERROR" });
+    return mapAndSendError(res, err);
   }
 };
 
@@ -33,26 +30,18 @@ export const loginWebUser = async (req, res) => {
     const { email, password } = req.body;
     const user = await findUserByEmail(email);
 
-    if (!user) {
-      return res.status(404).json({ error: "AUTH_USER_NOT_FOUND" });
-    }
+    if (!user) return sendError(res, "AUTH_USER_NOT_FOUND", 404);
 
-    if (isBlocked(user)) {
-      return res.status(403).json({ error: "AUTH_USER_BLOCKED" });
-    }
+    if (isBlocked(user)) return sendError(res, "AUTH_USER_BLOCKED", 403);
 
-    if (!user.password && password) {
-      return res.status(401).json({ error: "AUTH_USER_NOT_REGISTERED_WITH_EMAIL_PASSWORD" });
-    }
+    if (!user.password && password) return sendError(res, "AUTH_USER_NOT_REGISTERED_WITH_EMAIL_PASSWORD", 401);
 
-    if (!(await validatePassword(password, user.password))) {
-      return res.status(401).json({ error: "AUTH_INVALID_CREDENTIALS" });
-    }
+    if (!(await validatePassword(password, user.password))) return sendError(res, "AUTH_INVALID_CREDENTIALS", 401);
 
     const profile = await getUserProfile(user.id)
     return res.json(profile);
   } catch (err) {
-    res.status(500).json({ error: "AUTH_TOKEN_GENERATION_ERROR" });
+    return mapAndSendError(res, err);
   }
 };
 

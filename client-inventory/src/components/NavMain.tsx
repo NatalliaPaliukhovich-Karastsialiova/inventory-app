@@ -38,15 +38,15 @@ export function NavMain({
 
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>{t("sidebar.platform")}</SidebarGroupLabel>
+      <SidebarGroupLabel>{t("menu.platform")}</SidebarGroupLabel>
       <SidebarMenu>
         {filteredItems.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton tooltip={t(item.title)}
+            <SidebarMenuButton tooltip={t(`menu.${item.title}`)}
               onClick={() => navigate(item.url)}
             >
               {item.icon && <item.icon />}
-              <span>{t(item.title)}</span>
+              <span>{t(`menu.${item.title}`)}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

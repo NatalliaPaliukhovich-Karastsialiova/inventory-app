@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
-  createInventory,
   fetchInventoryById,
   fetchItemById,
-  updateInventory
+  likeItem,
+  unlikeItem
 } from "@/services/api";
-import type {
-  CustomField,
-  Inventory,
-  UserAccessList
-} from "@/components/table/InventoryColumns";
+import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import {
@@ -21,16 +17,25 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator
 } from "@/components/ui/breadcrumb";
-import { useAuthStore } from "@/store/authStore";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
 import { ItemForm } from "@/components/inventory/ItemForm";
-import type { Item } from "@/components/table/ItemColumns";
+import type { Item, CustomIDField, CustomField, Inventory } from "@/types";
+import { useTranslation } from "react-i18next";
 
 export default function ItemPage() {
   const { id, itemId } = useParams<{ id: string; itemId: string }>();
-  const navigate = useNavigate();
   const [inventory, setInventory] = useState<Inventory | null>(null);
   const [item, setItem] = useState<Item | null>(null);
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
+  const [customIdElements, setCustomIdElements] = useState<CustomIDField[]>([]);
+  const [hasPendingChanges, setHasPendingChanges] = useState<boolean>(false);
+  const [, setIsSaving] = useState<boolean>(false);
+  const [likes, setLikes] = useState<number>(0);
+  const [likedByMe, setLikedByMe] = useState<boolean>(false);
+  const user = useAuthStore.getState().user;
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function load() {
@@ -40,10 +45,14 @@ export default function ItemPage() {
           setItem(data);
           setInventory(data?.inventory);
           setCustomFields(data?.inventory.inventoryField ?? []);
+          setCustomIdElements(data?.inventory.customIdElements ?? []);
+          setLikes((data as any)?.likes ?? 0);
+          setLikedByMe((data as any)?.likedByMe ?? false);
         } else if (!itemId && id) {
           const data = await fetchInventoryById(id as string);
           setInventory(data);
           setCustomFields(data?.inventoryField ?? []);
+          setCustomIdElements(data?.customIdElements ?? []);
         }
       } catch (error) {
         toast.error("Failed to load inventory");
@@ -68,19 +77,67 @@ export default function ItemPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{"Item"}</BreadcrumbPage>
+              <div className="flex items-center gap-2">
+                <BreadcrumbPage>{"Item"}</BreadcrumbPage>
+                {item?.id && (item?.writeAccess || inventory?.writeAccess) && (
+                  <>
+                    {hasPendingChanges ? (
+                      <Badge variant="secondary">
+                        {t("common.unsavedChanges")}
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline">
+                        {t("common.allChangesSaved")}
+                      </Badge>
+                    )}
+                  </>
+                )}
+              </div>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
 
         {customFields.length > 0 && (
           <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min p-10">
+            <div className="flex justify-end mb-2">
+              {item && (
+                <Button
+                  variant={likedByMe ? "secondary" : "outline"}
+                  className="flex items-center gap-2"
+                  onClick={async () => {
+                    try {
+                      if (!item) return;
+                      if (!user) return;
+                      if (likedByMe) {
+                        const res = await unlikeItem(item.id);
+                        setLikes(res.likes);
+                        setLikedByMe(false);
+                      } else {
+                        const res = await likeItem(item.id);
+                        setLikes(res.likes);
+                        setLikedByMe(true);
+                      }
+                    } catch (e) {}
+                  }}
+                  disabled={!user}
+                >
+                  <Heart
+                    className={likedByMe ? "fill-red-500 text-red-500" : ""}
+                  />
+                  <span>{likes}</span>
+                </Button>
+              )}
+            </div>
             <ItemForm
               templateFields={customFields}
               inventoryId={inventory?.id as string}
               readOnly={!(item?.writeAccess || inventory?.writeAccess)}
               item={item}
               setItem={setItem}
+              enableAutoSave
+              onDirtyChange={setHasPendingChanges}
+              onSavingChange={setIsSaving}
+              customIdElements={customIdElements}
             />
           </div>
         )}
