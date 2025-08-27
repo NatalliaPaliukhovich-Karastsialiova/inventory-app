@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
-import {
-  getColumns,
-} from "@/components/table/InventoryColumns";
+import { getColumns } from "@/components/table/InventoryColumns";
 import { fetchInventories } from "@/services/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -18,7 +16,7 @@ export default function InventoriesPage() {
   const [data, setData] = useState<Inventory[]>([]);
   const [search, setSearch] = useState("");
   const { t } = useTranslation();
-  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [_selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const user = useAuthStore.getState().user;
   const navigate = useNavigate();
 
@@ -44,7 +42,9 @@ export default function InventoriesPage() {
     <DashboardLayout>
       <div className="container mx-auto py-1 space-y-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">{t("inventoriesPage.inventories")}</h2>
+          <h2 className="text-2xl font-bold">
+            {t("inventoriesPage.inventories")}
+          </h2>
         </div>
         <div className="flex justify-between gap-2">
           <Input
