@@ -87,10 +87,12 @@ export async function fetchUsers(): Promise<User[]> {
   return data;
 }
 
-export async function registerUser(email: string, password: string) {
+export async function registerUser(email: string, password: string, givenName?: string, familyName?: string) {
   const { data } = await axios.post(`${apiUrl}/api/v1/auth/web/register`, {
     email,
-    password
+    password,
+    givenName,
+    familyName
   });
 
   useAuthStore.getState().setUser(data);

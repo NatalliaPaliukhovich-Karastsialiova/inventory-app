@@ -35,7 +35,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
 
   const onSubmit = async (data: RegisterSchema) => {
     try {
-      await registerUser(data.email, data.password);
+      await registerUser(data.email, data.password, data.firstName, data.lastName);
       navigate("/");
     } catch (error: any) {
       const codeOrMsg = error?.response?.data?.error || error?.response?.data?.message;

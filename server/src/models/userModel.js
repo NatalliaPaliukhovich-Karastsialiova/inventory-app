@@ -2,10 +2,17 @@ import prisma from "../config/db.js";
 import { generateToken } from "../utils/cryptoUtils.js";
 import { hashPassword, comparePassword } from "../utils/cryptoUtils.js";
 
-export const createUser = async (email, password) => {
+export const createUser = async (email, password, givenName, familyName) => {
   const hashedPassword = await hashPassword(password);
   return prisma.user.create({
-    data: { email, password: hashedPassword, role: "user" }
+    data: {
+      email,
+      password: hashedPassword,
+      role: "user",
+      givenName: givenName || null,
+      familyName: familyName || null,
+      fullName: [givenName, familyName].join(" ") || null
+    }
   });
 };
 

@@ -3,7 +3,7 @@ import { sendError, mapAndSendError } from "../utils/http.js";
 
 export const registerWebUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, givenName, familyName } = req.body;
 
     if (!email || !password) return sendError(res, "AUTH_MISSING_CREDENTIALS", 400);
 
@@ -13,7 +13,7 @@ export const registerWebUser = async (req, res) => {
 
     let currentUser;
     if (!existingUser) {
-      currentUser = await createUser(email, password);
+      currentUser = await createUser(email, password, givenName, familyName);
     } else {
       currentUser = await updateUserPassword(email, password);
     }
