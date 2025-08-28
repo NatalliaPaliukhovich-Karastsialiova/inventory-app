@@ -10,28 +10,28 @@ import {
 
 export function LanguageSwitcher() {
   const { i18n } = useTranslation();
-  const [lang, setLang] = useState(i18n.language);
+  const normalize = (lng?: string) => (lng?.startsWith("ru") ? "ru" : "en");
+  const [lang, setLang] = useState(normalize(i18n.language || (i18n as any).resolvedLanguage || "en"));
 
   useEffect(() => {
     const savedLang = localStorage.getItem("i18nextLng");
-
-    if (!savedLang) {
-      i18n.changeLanguage("en");
-      setLang("en");
-    } else {
-      setLang(savedLang);
+    const next = normalize(savedLang || "en");
+    if (!savedLang || normalize(savedLang) !== normalize(i18n.language)) {
+      i18n.changeLanguage(next);
     }
+    setLang(next);
   }, [i18n]);
 
   const handleChange = (value: string) => {
     i18n.changeLanguage(value);
     setLang(value);
+    try { localStorage.setItem("i18nextLng", value); } catch {}
   };
 
   return (
     <Select onValueChange={handleChange} value={lang} >
       <SelectTrigger className="w-[100px]">
-        <SelectValue placeholder="Theme" />
+        <SelectValue placeholder="Language" />
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="en">English</SelectItem>
