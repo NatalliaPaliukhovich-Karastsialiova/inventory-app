@@ -350,7 +350,9 @@
     "itemCreatedSuccessfully": "Item created successfully!",
     "failedToCreateItem": "Failed to create item",
     "uploading": "Uploading...",
-    "customIdLabel": "Custom ID"
+    "customIdLabel": "Custom ID",
+    "clearLink": "Clear link",
+    "openFile": "Open"
   },
   "userAccessTable": {
     "inputPlaceholder": "Input name or email",

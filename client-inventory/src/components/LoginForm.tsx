@@ -34,7 +34,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
   const onSubmit = async (data: LoginSchema) => {
     try {
       await loginUser(data.email, data.password);
-      toast.success(t('login.loginSuccessful'));
       navigate("/");
     } catch (error: any) {
       const codeOrMsg = error?.response?.data?.error || error?.response?.data?.message;

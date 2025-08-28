@@ -33,6 +33,8 @@ import InventoryStats from "@/components/inventory/InventoryStats";
 import ConflictDialog from "@/components/ConflictDialog";
 import { Trash2 } from "lucide-react";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 
 export default function InventoryDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -239,7 +241,26 @@ export default function InventoryDetailsPage() {
 
   return (
     <DashboardLayout>
-      {inventory && (
+      {!inventory ? (
+        <div className="container mx-auto pt-1 space-y-4">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-6 w-40" />
+            <Loader2 className="animate-spin" />
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <Skeleton className="h-8 w-64" />
+            <div className="flex gap-2">
+              <Skeleton className="h-9 w-24" />
+              <Skeleton className="h-9 w-24" />
+            </div>
+          </div>
+          <div className="space-y-3">
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+        </div>
+      ) : (
         <div className="container mx-auto pt-1 space-y-4">
           <Breadcrumb>
             <BreadcrumbList className="flex flex-wrap gap-1 text-sm">

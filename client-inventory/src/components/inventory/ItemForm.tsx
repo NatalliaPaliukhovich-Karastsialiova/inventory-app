@@ -32,6 +32,8 @@ import type { Item, CustomIDField } from "@/types";
 import { useTranslation } from "react-i18next";
 import ConflictDialog from "@/components/ConflictDialog";
 import { validateCustomId, generateCustomIdPreview } from "@/lib/inventory";
+import { Button as UIButton } from "@/components/ui/button";
+import { ExternalLink, FileText, X } from "lucide-react";
 
 interface ItemFormProps {
   templateFields?: CustomField[];
@@ -344,18 +346,84 @@ export function ItemForm({
                           onCheckedChange={formField.onChange}
                         />
                       ) : field.type === "link" ? (
-                        <Input
-                          type="file"
-                          className="w-full"
-                          readOnly={readOnly}
-                          disabled={readOnly}
-                          onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            const url = await handleFileUpload(file);
-                            if (url) formField.onChange(url);
-                          }}
-                        />
+                        <div className="w-full space-y-2">
+                          <Input
+                            type="file"
+                            className="w-full"
+                            readOnly={readOnly}
+                            disabled={readOnly}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const url = await handleFileUpload(file);
+                              if (url) formField.onChange(url);
+                            }}
+                          />
+                          {typeof formField.value === "string" && formField.value && (
+                            <div className="flex items-center justify-between gap-3 rounded-md border p-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {(() => {
+                                  const href = formField.value as string;
+                                  const lower = href.toLowerCase();
+                                  const isImage = [
+                                    ".png",
+                                    ".jpg",
+                                    ".jpeg",
+                                    ".gif",
+                                    ".webp",
+                                    ".bmp",
+                                    ".svg"
+                                  ].some((ext) => lower.endsWith(ext));
+                                  if (isImage) {
+                                    return (
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <img
+                                          src={href}
+                                          alt="preview"
+                                          className="h-10 w-10 rounded object-cover border"
+                                        />
+                                        <span className="truncate text-sm" title={href}>
+                                          {href.split("/").pop()}
+                                        </span>
+                                      </div>
+                                    );
+                                  }
+                                  return (
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      <FileText className="size-5 text-muted-foreground" />
+                                      <span className="truncate text-sm" title={href}>
+                                        {href.split("/").pop()}
+                                      </span>
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <UIButton
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    const href = formField.value as string;
+                                    if (href) window.open(href, "_blank");
+                                  }}
+                                >
+                                  <ExternalLink className="mr-1" /> {t("itemForm.openFile")}
+                                </UIButton>
+                                {!readOnly && (
+                                  <UIButton
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => formField.onChange("")}
+                                  >
+                                    <X /> {t("itemForm.clearLink")}
+                                  </UIButton>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       ) : null}
                     </TooltipTrigger>
                     <TooltipContent side="top" align="start">

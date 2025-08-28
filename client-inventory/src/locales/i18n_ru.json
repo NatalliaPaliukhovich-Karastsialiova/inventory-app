@@ -31,7 +31,6 @@
     "orContinueWith": "Или войдите через",
     "google": "Войти через Google",
     "github": "Войти через Github",
-    "loginSuccessful": "Вход выполнен успешно",
     "loginError": "Ошибка входа",
     "noAccount": "Нет аккаунта?",
     "signUp": "Зарегистрироваться"
@@ -351,7 +350,9 @@
     "itemCreatedSuccessfully": "Элемент успешно создан!",
     "failedToCreateItem": "Не удалось создать элемент",
     "uploading": "Загрузка...",
-    "customIdLabel": "Пользовательский ID"
+    "customIdLabel": "Пользовательский ID",
+    "clearLink": "Очистить ссылку",
+    "openFile": "Открыть"
   },
   "userAccessTable": {
     "inputPlaceholder": "Введите имя или email",

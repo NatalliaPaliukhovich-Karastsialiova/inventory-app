@@ -7,7 +7,8 @@ import rehypeSanitize from "rehype-sanitize";
 import ReactMarkdown from "react-markdown";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Heart } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SearchPage() {
   const [params] = useSearchParams();
@@ -78,7 +79,31 @@ export default function SearchPage() {
         <Separator orientation="horizontal" />
 
         {loading ? (
-          <div>{t("common.loading")}</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <Skeleton className="h-6 w-40 mb-2" />
+              <ul className="space-y-2">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <li key={idx} className="p-3 rounded-md border flex items-center gap-2">
+                    <Skeleton className="h-5 w-48" />
+                    <Loader2 className="animate-spin" />
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <Skeleton className="h-6 w-32 mb-2" />
+              <ul className="space-y-2">
+                {Array.from({ length: 4 }).map((_, idx) => (
+                  <li key={idx} className="p-3 rounded-md border flex items-center gap-2">
+                    <Skeleton className="h-5 w-56" />
+                    <Loader2 className="animate-spin" />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>

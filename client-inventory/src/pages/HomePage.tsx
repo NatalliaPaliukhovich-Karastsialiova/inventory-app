@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import TagCloud from "@/components/TagCloud";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 
 export default function HomePage() {
   const { t } = useTranslation();
@@ -37,7 +39,47 @@ export default function HomePage() {
   }, []);
 
   if (!stats) {
-    return <div>{t("common.loading")}</div>;
+    return (
+      <DashboardLayout>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-stretch">
+          <div className="md:col-span-2 rounded-xl flex flex-col">
+            <div className="h-7 w-48 mb-4 flex items-center gap-2">
+              <Skeleton className="h-7 w-48" />
+              <Loader2 className="animate-spin" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-9 w-full" />
+              <Skeleton className="h-9 w-full" />
+              <Skeleton className="h-9 w-full" />
+            </div>
+          </div>
+
+          <div className="md:col-span-1 flex flex-col gap-4">
+            <Skeleton className="h-64 w-full rounded-xl" />
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <Skeleton className="h-6 w-60 mb-2" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Skeleton className="h-24 w-full rounded-xl" />
+            <Skeleton className="h-24 w-full rounded-xl" />
+            <Skeleton className="h-24 w-full rounded-xl" />
+          </div>
+        </div>
+
+        <div className="flex-1 rounded-xl md:min-h-min mt-6 mb-10">
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-7 w-56 mb-4" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-9 w-full" />
+          </div>
+        </div>
+      </DashboardLayout>
+    );
   }
 
   const columns = getColumns(t);

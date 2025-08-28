@@ -11,10 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import type { Inventory } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 
 export default function InventoriesPage() {
   const [data, setData] = useState<Inventory[]>([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
   const { t } = useTranslation();
   const [_selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const user = useAuthStore.getState().user;
@@ -23,10 +26,13 @@ export default function InventoriesPage() {
   useEffect(() => {
     async function getData() {
       try {
+        setLoading(true);
         const result = await fetchInventories();
         setData(result);
       } catch (error) {
         toast.error("Error:");
+      } finally {
+        setLoading(false);
       }
     }
     getData();
@@ -37,6 +43,28 @@ export default function InventoriesPage() {
   const filteredData = data.filter((inventory) =>
     inventory.title?.toLowerCase().includes(search.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="container mx-auto py-1 space-y-4">
+          <div className="flex justify-between items-center">
+            <Skeleton className="h-7 w-56" />
+            <Loader2 className="animate-spin" />
+          </div>
+          <div className="flex justify-between gap-2">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-10 w-40" />
+          </div>
+          <div className="space-y-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>

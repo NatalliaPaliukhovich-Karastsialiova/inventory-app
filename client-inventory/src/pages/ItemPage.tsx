@@ -19,10 +19,11 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
+import { Heart, Loader2 } from "lucide-react";
 import { ItemForm } from "@/components/inventory/ItemForm";
 import type { Item, CustomIDField, CustomField, Inventory } from "@/types";
 import { useTranslation } from "react-i18next";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ItemPage() {
   const { id, itemId } = useParams<{ id: string; itemId: string }>();
@@ -97,7 +98,20 @@ export default function ItemPage() {
           </BreadcrumbList>
         </Breadcrumb>
 
-        {customFields.length > 0 && (
+        {!customFields.length ? (
+          <div className="bg-muted/50 min-h-[60vh] flex-1 rounded-xl md:min-h-min p-10 space-y-4">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-6 w-32" />
+              <Loader2 className="animate-spin" />
+            </div>
+            <Skeleton className="h-10 w-32 ml-auto" />
+            <div className="space-y-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-full" />
+              ))}
+            </div>
+          </div>
+        ) : (
           <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min p-10">
             <div className="flex justify-end mb-2">
               {item && (

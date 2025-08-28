@@ -15,12 +15,15 @@ import { ProfileSettings } from "@/components/ProfileSettings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash } from "lucide-react";
 import type { Inventory } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 
 export default function ProfilePage() {
   const [myInventories, setMyInventories] = useState<Inventory[]>([]);
   const [inventoriesWithAccess, setInventoriesWithAccess] = useState<
     Inventory[]
   >([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [searchAccess, setSearchAccess] = useState("");
   const { t } = useTranslation();
@@ -31,12 +34,15 @@ export default function ProfilePage() {
   useEffect(() => {
     async function getData() {
       try {
+        setLoading(true);
         const resultMy = await fetchMyInventories("own");
         setMyInventories(resultMy);
         const resultWrite = await fetchMyInventories("write");
         setInventoriesWithAccess(resultWrite);
       } catch (error) {
         toast.error(t("common.error"));
+      } finally {
+        setLoading(false);
       }
     }
     getData();
@@ -77,6 +83,27 @@ export default function ProfilePage() {
   const filteredInventoriesWrite = inventoriesWithAccess.filter((inventory) =>
     inventory.title?.toLowerCase().includes(searchAccess.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="space-y-6">
+          <div className="grid auto-rows-min gap-4 md:grid-cols-">
+            <Skeleton className="h-40 w-full rounded-xl" />
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-9 w-64" />
+            <Loader2 className="animate-spin" />
+          </div>
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Skeleton key={i} className="h-10 w-full" />
+            ))}
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
