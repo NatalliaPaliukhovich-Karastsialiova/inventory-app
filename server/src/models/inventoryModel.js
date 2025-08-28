@@ -13,7 +13,8 @@ export async function createInventoryInDb(payload, ownerId) {
     tags = [],
     isPublic = false,
     accessList = [],
-    customIdElements = []
+    customIdElements = [],
+    inventoryField = []
   } = payload;
 
   return prisma.$transaction(async (prisma) => {
@@ -82,12 +83,29 @@ export async function createInventoryInDb(payload, ownerId) {
       });
     }
 
+    if (Array.isArray(inventoryField) && inventoryField.length > 0) {
+      for (let i = 0; i < inventoryField.length; i++) {
+        const f = inventoryField[i];
+        await prisma.inventoryField.create({
+          data: {
+            inventoryId: inventory.id,
+            label: f.label ?? "",
+            description: f.description ?? "",
+            type: f.type,
+            showInTable: f.showInTable ?? false,
+            orderIndex: i
+          }
+        });
+      }
+    }
+
     return prisma.inventory.findUnique({
       where: { id: inventory.id },
       include: {
         tags: { include: { tag: true } },
         accessList: true,
-        customIdElements: true
+        customIdElements: true,
+        inventoryField: true
       }
     });
   });

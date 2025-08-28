@@ -1,6 +1,6 @@
 import prisma from "../config/db.js";
 import { sendError, mapAndSendError } from "../utils/http.js";
-import { InventoryCategory } from "@prisma/client";
+import { InventoryCategory, FieldType, IdSeqType } from "@prisma/client";
 import { z } from "zod";
 import {
   createInventoryInDb,
@@ -16,12 +16,39 @@ import {
   computeInventoryStats
 } from "../models/inventoryModel.js";
 
+const TagInputSchema = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().min(1).optional()
+}).refine((v) => Boolean(v.id || v.name), { message: "TAG_ID_OR_NAME_REQUIRED" });
+
+const AccessInputSchema = z.object({
+  userId: z.string().uuid()
+});
+
+const CustomIdElementSchema = z.object({
+  type: z.nativeEnum(IdSeqType),
+  value: z.string().optional(),
+  separator: z.string().nullable().optional()
+});
+
+const InventoryFieldSchema = z.object({
+  id: z.string().uuid().optional(),
+  label: z.string().min(1),
+  description: z.string().optional().nullable(),
+  type: z.nativeEnum(FieldType),
+  showInTable: z.boolean().optional(),
+});
+
 const createInventorySchema = z.object({
   title: z.string().min(1),
   description: z.string().optional(),
   category: z.nativeEnum(InventoryCategory),
   imageUrl: z.string().url().optional().or(z.literal("")).optional().nullable(),
   isPublic: z.boolean().optional(),
+  tags: z.array(TagInputSchema).optional(),
+  accessList: z.array(AccessInputSchema).optional(),
+  customIdElements: z.array(CustomIdElementSchema).optional(),
+  inventoryField: z.array(InventoryFieldSchema).optional()
 });
 
 const updateInventorySchema = z.object({
@@ -30,14 +57,18 @@ const updateInventorySchema = z.object({
   category: z.nativeEnum(InventoryCategory).optional(),
   imageUrl: z.string().url().optional().or(z.literal("")).optional().nullable(),
   isPublic: z.boolean().optional(),
-  version: z.number().int().nonnegative().optional()
+  version: z.number().int().nonnegative().optional(),
+  tags: z.array(TagInputSchema).optional(),
+  accessList: z.array(AccessInputSchema).optional(),
+  customIdElements: z.array(CustomIdElementSchema).optional(),
+  inventoryField: z.array(InventoryFieldSchema).optional()
 });
 
 export async function createInventory(req, res) {
   try {
     const parsed = createInventorySchema.safeParse(req.body || {});
     if (!parsed.success) return sendError(res, "INVENTORY_INVALID_FIELDS", 400);
-    const inventory = await createInventoryInDb(req.body, req.user.id);
+    const inventory = await createInventoryInDb(parsed.data, req.user.id);
     res.status(201).json(inventory);
   } catch (error) {
     console.error(error);
