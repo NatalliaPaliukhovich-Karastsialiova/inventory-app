@@ -109,7 +109,8 @@
       "description": "Registered members of the platform"
     },
     "latestInventories": "Latest Inventories",
-    "topInventories": "Top Inventories"
+    "topInventories": "Top Inventories",
+    "tags": "Tags"
   },
   "adminPage": {
     "confirmDeleteTitle": "Delete users",

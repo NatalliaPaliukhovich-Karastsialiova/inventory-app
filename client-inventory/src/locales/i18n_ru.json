@@ -110,7 +110,8 @@
       "description": "Зарегистрированные участники платформы"
     },
     "latestInventories": "Последние инвентари",
-    "topInventories": "Популярные инвентари"
+    "topInventories": "Популярные инвентари",
+    "tags": "Теги"
   },
   "adminPage": {
     "confirmDeleteTitle": "Удаление пользователей",
