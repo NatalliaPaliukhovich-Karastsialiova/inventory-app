@@ -6,13 +6,7 @@ import {
   updateInventory,
   deleteInventory
 } from "@/services/api";
-import type {
-  Inventory,
-  UserAccessList,
-  CustomIDField,
-  CustomField,
-  InventoryTag
-} from "@/types";
+import type { Inventory, UserAccessList, InventoryTag } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -45,8 +39,7 @@ export default function InventoryDetailsPage() {
   const navigate = useNavigate();
   const [inventory, setInventory] = useState<Inventory | null>(null);
   const inventoryRef = useRef<Inventory | null>(null);
-  const [customIDFields, setCustomIDFields] = useState<CustomIDField[]>([]);
-  const [customFields, setCustomFields] = useState<CustomField[]>([]);
+  // Moved to inventory state to avoid divergence with server response
   const [accessList, setAccessList] = useState<UserAccessList[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isNew, setIsNew] = useState(false);
@@ -68,10 +61,14 @@ export default function InventoryDetailsPage() {
     inventoryRef.current = inventory;
   }, [inventory]);
 
-  const setInventorySafe = (updater: Inventory | ((prev: Inventory | null) => Inventory | null) | null) => {
+  const setInventorySafe = (
+    updater: Inventory | ((prev: Inventory | null) => Inventory | null) | null
+  ) => {
     if (typeof updater === "function") {
       setInventory((prev) => {
-        const next = (updater as (p: Inventory | null) => Inventory | null)(prev);
+        const next = (updater as (p: Inventory | null) => Inventory | null)(
+          prev
+        );
         inventoryRef.current = next as Inventory | null;
         return next as Inventory | null;
       });
@@ -87,8 +84,6 @@ export default function InventoryDetailsPage() {
         if (id) {
           const data = await fetchInventoryById(id as string);
           setInventory(data);
-          setCustomIDFields(data?.customIdElements ?? []);
-          setCustomFields(data?.inventoryField ?? []);
           setAccessList(data?.accessList ?? []);
           setIsNew(false);
         } else {
@@ -153,8 +148,10 @@ export default function InventoryDetailsPage() {
           ? (inventoryRef.current?.tags as InventoryTag[]).map((t) => t.tag)
           : []
       };
-      if (customIDFields) payload.customIdElements = customIDFields;
-      if (customFields) payload.inventoryField = customFields;
+      if (inventoryRef.current?.customIdElements)
+        payload.customIdElements = (inventoryRef.current as any).customIdElements;
+      if (inventoryRef.current?.inventoryField)
+        payload.inventoryField = (inventoryRef.current as any).inventoryField;
       if (accessList) payload.accessList = accessList;
       if (inventory?.id) {
         try {
@@ -162,7 +159,13 @@ export default function InventoryDetailsPage() {
           const hadLaterChanges = lastLocalChangeAtRef.current > saveStartedAt;
           if (hadLaterChanges) {
             const latest = inventoryRef.current as Inventory;
-            setInventorySafe({ ...(updated as any), tags: (latest?.tags ?? []) as any } as any);
+            setInventorySafe({
+              ...(updated as any),
+              tags: (latest as any)?.tags ?? (updated as any)?.tags,
+              customIdElements: (latest as any)?.customIdElements ?? (updated as any)?.customIdElements,
+              inventoryField: (latest as any)?.inventoryField ?? (updated as any)?.inventoryField,
+              accessList: (latest as any)?.accessList ?? (updated as any)?.accessList
+            } as any);
           } else {
             setInventorySafe(updated as any);
           }
@@ -347,7 +350,7 @@ export default function InventoryDetailsPage() {
                   </TabsTrigger>
                   <TabsTrigger
                     value="custom_id"
-                    className="flex-1 min-w-[100px]"
+                    className="flex-1 min-w-[140px]"
                   >
                     {t("inventoryDetails.customID")}
                   </TabsTrigger>
@@ -374,7 +377,7 @@ export default function InventoryDetailsPage() {
                 inventoryId={id as string}
                 canWrite={!!(user && inventory?.writeAccess)}
               />
-              <Items itemsConfig={customFields} />
+              <Items itemsConfig={(inventory as any)?.inventoryField ?? []} />
             </TabsContent>
 
             <TabsContent value="chat">
@@ -400,9 +403,11 @@ export default function InventoryDetailsPage() {
             <TabsContent value="custom_id">
               <div className="bg-muted/50 min-h-[60vh] sm:min-h-min flex-1 rounded-xl p-4 sm:p-10">
                 <CustomIDBuilder
-                  initialFields={customIDFields}
+                  initialFields={(inventory as any)?.customIdElements ?? []}
                   onChange={(fields, hasErrors) => {
-                    setCustomIDFields(fields);
+                    setInventorySafe((prev) =>
+                      prev ? ({ ...prev, customIdElements: fields } as any) : prev
+                    );
                     setHasPendingChanges(true);
                     setHasCustomIdErrors(hasErrors);
                     markLocalChange();
@@ -415,9 +420,11 @@ export default function InventoryDetailsPage() {
             <TabsContent value="fields">
               <div className="bg-muted/50 min-h-[60vh] sm:min-h-min flex-1 rounded-xl p-4 sm:p-10">
                 <InventoryFieldBuilder
-                  initialFields={customFields}
+                  initialFields={(inventory as any)?.inventoryField ?? []}
                   onChange={(fields) => {
-                    setCustomFields(fields);
+                    setInventorySafe((prev) =>
+                      prev ? ({ ...prev, inventoryField: fields } as any) : prev
+                    );
                     setHasPendingChanges(true);
                     markLocalChange();
                   }}
@@ -452,8 +459,6 @@ export default function InventoryDetailsPage() {
                 if (!id) return;
                 const data = await fetchInventoryById(id as string);
                 setInventory(data);
-                setCustomIDFields(data?.customIdElements ?? []);
-                setCustomFields(data?.inventoryField ?? []);
                 setAccessList(data?.accessList ?? []);
                 setIsNew(false);
                 setHasPendingChanges(false);

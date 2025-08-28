@@ -240,7 +240,8 @@
       "seq": "Invalid sequence format. Use D or D{{digits}} (e.g., D3).",
       "rand20": "Invalid format. Use D6 or X5.",
       "rand32": "Invalid format. Use D10 or X8.",
-      "date": "Invalid date format. Use dayjs tokens (e.g., YYYYMMDD, HHmmss)."
+      "date": "Invalid date format. Use dayjs tokens (e.g., YYYYMMDD, HHmmss).",
+      "fixed": "Fixed text is required."
     }
   },
   "columns": {

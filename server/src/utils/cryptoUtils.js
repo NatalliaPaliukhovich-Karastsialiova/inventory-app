@@ -68,7 +68,7 @@ function regexForElement(el) {
     case "fixed":
       return escapeRegExp(value);
     case "guid":
-      return "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
+      return "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}";
     case "date": {
       let fmt = value || "YYYYMMDD";
       fmt = escapeRegExp(fmt);
@@ -82,11 +82,10 @@ function regexForElement(el) {
     }
     case "seq": {
       if (value && value.toUpperCase().startsWith("D")) {
-        const zeros = parseInt(value.replace(/\D/g, ""), 10);
-        const minLen = (isNaN(zeros) ? 0 : zeros) + 1;
-        return `\\d{${minLen},}`;
+        const minLength = parseInt(value.replace(/\D/g, ""), 10);
+        return `\\d{${minLength},}`;
       }
-      return `\\d{1,}`;
+      return `\\d{${1}}`;
     }
     case "rand6":
       return "\\d{6}";
@@ -153,11 +152,10 @@ export async function generateCustomId(inventoryId) {
         break;
 
       case "seq":
-        const seqNumber = await getNextSequence(inventoryId);
+        const next = (await getNextSequence(inventoryId)).toString();
         const width = el.value ? parseInt(el.value.replace(/\D/g, ""), 10) : 0;
-        part = `${"".padStart(width, "0")}1`;
+        part = next.length >= width ? next : next.padStart(width, "0");
         break;
-
       case "rand6":
         part = generateRandomByNumber(6);
         break;
