@@ -2,8 +2,8 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CustomField, Item } from "@/types";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-
+import { Badge } from "@/components/ui/badge";
+import { FileText, Image } from "lucide-react";
 
 export function getColumns(
   t: (key: string) => string,
@@ -28,18 +28,34 @@ export function getColumns(
           (fv: any) => fv.field.id === field.id
         );
         if (field.type === "link" && fieldValue?.value) {
+          const href: string = fieldValue.value;
+          const clean = href.split("#")[0].split("?")[0].toLowerCase();
+          const isImage = [
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".webp",
+            ".bmp",
+            ".svg"
+          ].some((ext) => clean.endsWith(ext));
           return (
             <a
-              href={fieldValue.value}
+              href={href}
               target="_blank"
-              className="flex items-center gap-2"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
             >
-              <Avatar className="h-20 w-20 rounded-xl object-fit">
-                <AvatarImage src={fieldValue.value} alt={field.label} />
-                <AvatarFallback>
-                  {field.label.slice(0, 2).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <Badge variant="secondary" className="inline-flex items-center gap-1">
+                {isImage ? (
+                  <Image className="w-3.5 h-3.5" />
+                ) : (
+                  <FileText className="w-3.5 h-3.5" />
+                )}
+                <span>{t("codelists.fieldTypes.link")}</span>
+              </Badge>
             </a>
           );
         }

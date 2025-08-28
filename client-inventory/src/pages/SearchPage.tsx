@@ -37,7 +37,7 @@ export default function SearchPage() {
       const parts = text.split(re);
       return parts.map((part, idx) =>
         part.toLowerCase() === q.toLowerCase() ? (
-          <mark key={idx} className="bg-yellow-200 px-0.5 rounded-sm">
+          <mark key={idx} className="bg-blue-100 px-0.5 rounded-sm">
             {part}
           </mark>
         ) : (

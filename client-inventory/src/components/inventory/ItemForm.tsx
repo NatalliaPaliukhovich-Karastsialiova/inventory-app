@@ -340,7 +340,7 @@ export function ItemForm({
                         />
                       ) : field.type === "boolean" ? (
                         <Switch
-                          className="bg-amber-500"
+                          className="bg-gray-900 dark:bg-blue-500"
                           disabled={readOnly}
                           checked={formField.value as boolean}
                           onCheckedChange={formField.onChange}

@@ -41,7 +41,6 @@ export default function InventoryDetailsPage() {
   const navigate = useNavigate();
   const [inventory, setInventory] = useState<Inventory | null>(null);
   const inventoryRef = useRef<Inventory | null>(null);
-  // Moved to inventory state to avoid divergence with server response
   const [accessList, setAccessList] = useState<UserAccessList[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isNew, setIsNew] = useState(false);
@@ -266,7 +265,7 @@ export default function InventoryDetailsPage() {
             <BreadcrumbList className="flex flex-wrap gap-1 text-sm">
               <BreadcrumbItem>
                 <BreadcrumbLink href="/inventories">
-                  {t("inventories")}
+                  {t("inventoryDetails.inventories")}
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />

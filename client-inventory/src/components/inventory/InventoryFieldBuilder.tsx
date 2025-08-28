@@ -240,6 +240,7 @@ function SortableField({
         />
         <div className="flex items-center gap-2">
           <Switch
+            className="bg-gray-900 dark:bg-blue-500"
             checked={field.showInTable}
             onCheckedChange={(value) =>
               updateField(field.id, { showInTable: value })

@@ -199,7 +199,8 @@
     "customID": "Custom ID",
     "fields": "Fields",
     "access": "Access",
-    "statistics": "Statistics"
+    "statistics": "Statistics",
+    "inventories": "Inventories"
   },
   "inventoryFieldBuilder": {
     "instructions": "Drag the handle to reorder fields. Provide a clear title and an optional description (shown in forms as a hint). Choose a type for each field and enable \"Show in Table\" to display the value in the items list. Changes are saved in the inventory when you save.",

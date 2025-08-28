@@ -93,6 +93,7 @@ export type Item = {
   updatedAt: string;
   writeAccess?: boolean;
   ownerOrAdmin?: boolean;
+  version?: number;
   fieldValues: ItemFieldValue[];
   _count?: { likes: number };
 };
@@ -123,4 +124,24 @@ export type InventoryTag = {
   tagId?: string;
   inventoryId?: string;
   tag: Tag;
+};
+
+export type SearchInventoryResult = {
+  id: string;
+  title: string;
+  description?: string | null;
+  category: string;
+  imageUrl?: string | null;
+  createdAt: string;
+};
+
+export type SearchItemResult = {
+  id: string;
+  inventoryId: string;
+  inventoryTitle: string;
+  createdAt: string;
+  customId?: string;
+  _count? : {
+    likes?: number;
+  }
 };

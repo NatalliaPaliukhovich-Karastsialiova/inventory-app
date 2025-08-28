@@ -68,7 +68,9 @@ export default function ItemPage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/inventories">Inventories</BreadcrumbLink>
+              <BreadcrumbLink href="/inventories">
+               {t("inventoryDetails.inventories")}
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
