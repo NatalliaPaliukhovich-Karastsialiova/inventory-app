@@ -1,28 +1,29 @@
-import DashboardLayout from "@/layouts/DashboardLayout"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { DataTable } from "@/components/table/DataTable"
-import { Checkbox } from "@/components/ui/checkbox"
-import ConfirmDialog from "@/components/ConfirmDialog"
-import { useTranslation } from "react-i18next"
-import { useEffect, useState } from "react"
-import { getColumns} from "@/components/table/InventoryColumns"
-import { useNavigate } from "react-router-dom"
-import { toast } from "sonner"
-import { fetchMyInventories } from "@/services/api"
-import { deleteInventory } from "@/services/api"
-import { ProfileSettings } from "@/components/ProfileSettings"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Trash } from "lucide-react"
-import type { Inventory } from "@/types"
+import DashboardLayout from "@/layouts/DashboardLayout";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { DataTable } from "@/components/table/DataTable";
+import { Checkbox } from "@/components/ui/checkbox";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import { getColumns } from "@/components/table/InventoryColumns";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { fetchMyInventories } from "@/services/api";
+import { deleteInventory } from "@/services/api";
+import { ProfileSettings } from "@/components/ProfileSettings";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Trash } from "lucide-react";
+import type { Inventory } from "@/types";
 
 export default function ProfilePage() {
-
-  const [myInventories, setMyInventories] = useState<Inventory[]>([])
-  const [inventoriesWithAccess, setInventoriesWithAccess] = useState<Inventory[]>([])
-  const [search, setSearch] = useState("")
-  const [searchAccess, setSearchAccess] = useState("")
-  const { t } = useTranslation()
+  const [myInventories, setMyInventories] = useState<Inventory[]>([]);
+  const [inventoriesWithAccess, setInventoriesWithAccess] = useState<
+    Inventory[]
+  >([]);
+  const [search, setSearch] = useState("");
+  const [searchAccess, setSearchAccess] = useState("");
+  const { t } = useTranslation();
   const [selectedInventories, setSelectedInventories] = useState<string[]>([]);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const navigate = useNavigate();
@@ -30,49 +31,52 @@ export default function ProfilePage() {
   useEffect(() => {
     async function getData() {
       try {
-        const resultMy = await fetchMyInventories('own')
-        setMyInventories(resultMy)
-        const resultWrite = await fetchMyInventories('write')
-        setInventoriesWithAccess(resultWrite)
+        const resultMy = await fetchMyInventories("own");
+        setMyInventories(resultMy);
+        const resultWrite = await fetchMyInventories("write");
+        setInventoriesWithAccess(resultWrite);
       } catch (error) {
-        toast.error(t("common.error"))
+        toast.error(t("common.error"));
       }
     }
-    getData()
-  }, [])
+    getData();
+  }, []);
 
-  const columnsMyInventory = [{
-    id: "select",
-    header: ({ table }: any) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label={t("table.columns.userAccess.selectAll")}
-        onClick={(e) => e.stopPropagation()}
-      />
-    ),
-    cell: ({ row }: any) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label={t("table.columns.userAccess.selectRow")}
-        onClick={(e) => e.stopPropagation()}
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  }, ...getColumns(t)] as any
+  const columnsMyInventory = [
+    {
+      id: "select",
+      header: ({ table }: any) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label={t("table.columns.userAccess.selectAll")}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+      cell: ({ row }: any) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label={t("table.columns.userAccess.selectRow")}
+          onClick={(e) => e.stopPropagation()}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false
+    },
+    ...getColumns(t)
+  ] as any;
 
+  const filteredMyInventories = myInventories.filter((inventory) =>
+    inventory.title?.toLowerCase().includes(search.toLowerCase())
+  );
 
-  const filteredMyInventories = myInventories.filter(
-    (inventory) =>
-      inventory.title?.toLowerCase().includes(search.toLowerCase())
-  )
-
-  const filteredInventoriesWrite = inventoriesWithAccess.filter(
-    (inventory) =>
-      inventory.title?.toLowerCase().includes(searchAccess.toLowerCase())
-  )
+  const filteredInventoriesWrite = inventoriesWithAccess.filter((inventory) =>
+    inventory.title?.toLowerCase().includes(searchAccess.toLowerCase())
+  );
 
   return (
     <DashboardLayout>
@@ -87,7 +91,9 @@ export default function ProfilePage() {
         <TabsContent value="own">
           <div className="container mx-auto py-1 space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">{t("profilePage.myInventories")}</h2>
+              <h2 className="text-2xl font-bold">
+                {t("profilePage.myInventories")}
+              </h2>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <Input
@@ -100,6 +106,7 @@ export default function ProfilePage() {
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => navigate(`/inventories/new`)}
                 >
                   <Plus />
                   {t("inventory.create")}
@@ -117,17 +124,17 @@ export default function ProfilePage() {
                   title={t("profilePage.confirmDeleteTitle")}
                   description={t("profilePage.confirmDeleteDescription")}
                   onConfirm={async () => {
-                    setConfirmOpen(false)
+                    setConfirmOpen(false);
                     try {
                       if (!selectedInventories.length) return;
                       for (const invId of selectedInventories) {
                         await deleteInventory(invId);
                       }
-                      const resultMy = await fetchMyInventories('own')
-                      setMyInventories(resultMy)
-                      setSelectedInventories([])
+                      const resultMy = await fetchMyInventories("own");
+                      setMyInventories(resultMy);
+                      setSelectedInventories([]);
                     } catch (e) {
-                      toast.error(t("common.error"))
+                      toast.error(t("common.error"));
                     }
                   }}
                   onClose={() => setConfirmOpen(false)}
@@ -146,7 +153,9 @@ export default function ProfilePage() {
         <TabsContent value="write">
           <div className="container mx-auto py-1 space-y-4">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold">{t("profilePage.inventoriesCanWriteTo")}</h2>
+              <h2 className="text-2xl font-bold">
+                {t("profilePage.inventoriesCanWriteTo")}
+              </h2>
             </div>
             <div className="flex flex-wrap justify-between gap-2">
               <Input
@@ -166,5 +175,5 @@ export default function ProfilePage() {
         </TabsContent>
       </Tabs>
     </DashboardLayout>
-  )
+  );
 }
