@@ -362,17 +362,19 @@ export async function listInventoriesFromDb() {
   });
 }
 
-export async function myListInventoriesFromDb(userId, type) {
+export async function myListInventoriesFromDb(userId, type, role = "user") {
   const where = {};
 
   if (type === "own") {
     where.ownerId = userId;
   } else if (type === "write") {
-    where.ownerId = { not: userId };
-    where.OR = [
-      { isPublic: true },
-      { accessList: { some: { userId: userId } } }
-    ];
+    if (role !== "admin") {
+      where.ownerId = { not: userId };
+      where.OR = [
+        { isPublic: true },
+        { accessList: { some: { userId: userId } } }
+      ];
+    }
   }
 
   return prisma.inventory.findMany({

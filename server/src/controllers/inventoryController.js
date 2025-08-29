@@ -153,7 +153,7 @@ export async function listInventories(req, res) {
 export async function myListInventories(req, res) {
   try {
     const { type = "own" } = req.query;
-    const inventories = await myListInventoriesFromDb(req.user.id, type);
+    const inventories = await myListInventoriesFromDb(req.user.id, type, req.user.role);
     res.json(inventories);
   } catch (error) {
     console.error(error);
