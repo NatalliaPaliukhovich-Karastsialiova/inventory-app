@@ -27,7 +27,9 @@ export function getColumns(t: (key: string) => string): ColumnDef<Inventory>[] {
           <div className="text-right font-medium flex gap-3">
             <Avatar className="rounded-lg">
               <AvatarImage src={imageUrl} />
-              <AvatarFallback>{"?"}</AvatarFallback>
+              <AvatarFallback>
+                {title?.[0]?.toUpperCase() ?? "?"}
+              </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-medium">{title}</span>
