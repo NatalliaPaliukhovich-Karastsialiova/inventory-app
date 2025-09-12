@@ -12,6 +12,7 @@ import chatSocket from "./sockets/chatSocket.js";
 import itemRoutes from "./routes/itemRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
 import configRouters from "./routes/configRoutes.js";
+import integrationsRoutes from "./routes/integrationsRoutes.js";
 import tagsRoutes from "./routes/tagsRoutes.js";
 import searchRoutes from "./routes/searchRoutes.js";
 
@@ -37,6 +38,7 @@ app.use("/api/v1/items", itemRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/config", configRouters);
 app.use("/api/v1/tags", tagsRoutes);
+app.use("/api/v1/integrations", integrationsRoutes);
 app.use("/api/v1/search", searchRoutes);
 
 io.on("connection", (socket) => {

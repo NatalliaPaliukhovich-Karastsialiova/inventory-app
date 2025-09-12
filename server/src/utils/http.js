@@ -25,6 +25,9 @@ export function mapAndSendError(res, error) {
     case "AUTH_CREATE_USER_ERROR":
     case "PROFILE_FAILED_UPDATE":
       return sendError(res, code, 500);
+    case "INTEGRATION_SFDC_MISCONFIGURED":
+    case "INTEGRATION_SFDC_API_ERROR":
+      return sendError(res, code, 500);
     default:
       return sendError(res, "COMMON_SERVER_ERROR", 500);
   }

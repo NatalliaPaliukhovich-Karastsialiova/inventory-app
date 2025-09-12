@@ -22,6 +22,7 @@ model User {
   avatar            String?
   avatarFallback    String?
   password          String?
+  salesforceAccountId String?
   role      Role     @default(user)
   status    Status     @default(active)
   accounts  Account[]

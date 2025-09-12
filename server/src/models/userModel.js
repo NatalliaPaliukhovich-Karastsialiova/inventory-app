@@ -43,6 +43,7 @@ export const getUserProfile = async (id) => {
       familyName: true,
       avatar: true,
       avatarFallback: true,
+      salesforceAccountId: true,
       role: true,
       status: true,
       createdAt: true,
@@ -91,6 +92,12 @@ export const updateProfileInDb = (userId, givenName, familyName, avatar) =>
       fullName: `${givenName} ${familyName}`,
       avatar
     }
+  });
+
+export const setSalesforceAccountId = (userId, accountId) =>
+  prisma.user.update({
+    where: { id: userId },
+    data: { salesforceAccountId: accountId }
   });
 
 export const searchUsersInDb = (q) =>
