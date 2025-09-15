@@ -53,6 +53,7 @@ export async function createSalesforceAccountAndContact({ accountName, contact }
       contactId: contactRes.data?.id
     };
   } catch (err) {
+    console.log(err);
     const error = new Error("Salesforce API error");
     error.code = "INTEGRATION_SFDC_API_ERROR";
     error.details = err?.response?.data || err?.message;
