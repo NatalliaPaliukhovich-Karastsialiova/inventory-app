@@ -33,6 +33,7 @@ export async function uploadJsonToDropbox(path, data) {
   );
 
   if (status !== 200) {
+    console.log(status, resp);
     const err = new Error("Dropbox upload failed");
     err.code = "INTEGRATION_DROPBOX_UPLOAD_FAILED";
     throw err;
