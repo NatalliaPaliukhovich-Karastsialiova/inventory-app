@@ -14,6 +14,7 @@ type User = {
   status: string
   createdAt: string
   accounts?: { provider: 'google' | 'github' }[]
+  salesforceAccountId?: string
 }
 
 type AuthState = {

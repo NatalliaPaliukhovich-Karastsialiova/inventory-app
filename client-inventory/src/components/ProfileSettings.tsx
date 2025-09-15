@@ -19,11 +19,18 @@ import { useAuthStore } from "@/store/authStore";
 import { updateProfile, uploadFile } from "@/services/api";
 import { toast } from "sonner";
 import { Label } from "./ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { syncMeToSalesforce } from "@/services/api";
 
 export function ProfileSettings() {
   const { t } = useTranslation();
   const [uploading, setUploading] = useState(false);
   const user = useAuthStore((state) => state.user);
+  const [sfOpen, setSfOpen] = useState(false);
+  const [sfLoading, setSfLoading] = useState(false);
+  const [sfAccountName, setSfAccountName] = useState<string>(user?.fullName || user?.email || "");
+  const [sfPhone, setSfPhone] = useState<string>("");
+  const [sfWebsite, setSfWebsite] = useState<string>("");
 
   const form = useForm<ProfileSchema>({
     resolver: zodResolver(profileSchema(t)),
@@ -32,7 +39,8 @@ export function ProfileSettings() {
       givenName: user?.givenName || "",
       familyName: user?.familyName || "",
       avatar: user?.avatar || "",
-      role: user?.role || ""
+      role: user?.role || "",
+      salesforceAccountId: user?.salesforceAccountId || ""
     }
   });
 
@@ -56,6 +64,27 @@ export function ProfileSettings() {
       toast.success(t("common.profileUpdated"));
     } catch (e) {
       toast.error(t("common.error"));
+    }
+  }
+
+  async function handleSyncSalesforce(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      setSfLoading(true);
+      const res = await syncMeToSalesforce({
+        accountName: sfAccountName || undefined,
+        phone: sfPhone || undefined,
+        companyWebsite: sfWebsite || undefined
+      });
+      if (res?.user) {
+        useAuthStore.getState().setUser(res.user);
+      }
+      toast.success(t("common.success"));
+      setSfOpen(false);
+    } catch (e) {
+      toast.error(t("common.error"));
+    } finally {
+      setSfLoading(false);
     }
   }
 
@@ -184,9 +213,64 @@ export function ProfileSettings() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="salesforceAccountId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("profile.salesforceAccountId")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        readOnly
+                        value={user?.salesforceAccountId}
+                        className="pointer-events-none"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <Button type="submit" disabled={uploading}>
                 {t("common.save")}
               </Button>
+              <div className="flex items-center gap-2">
+                {!user?.salesforceAccountId && (
+                <Dialog open={sfOpen} onOpenChange={setSfOpen}>
+                  <DialogTrigger asChild>
+                    <Button type="button" variant="secondary" className="w-full">
+                      {t("profilePage.syncSalesforce")}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                      <DialogTitle>{t("profilePage.syncSalesforceTitle")}</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleSyncSalesforce} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="sfAccountName">{t("profilePage.sfAccountName")}</Label>
+                        <Input id="sfAccountName" value={sfAccountName} onChange={(e) => setSfAccountName(e.target.value)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="sfPhone">{t("profilePage.sfPhone")}</Label>
+                        <Input id="sfPhone" value={sfPhone} onChange={(e) => setSfPhone(e.target.value)} />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="sfWebsite">{t("profilePage.sfWebsite")}</Label>
+                        <Input id="sfWebsite" value={sfWebsite} onChange={(e) => setSfWebsite(e.target.value)} />
+                      </div>
+                      <DialogFooter>
+                        <Button type="button" variant="outline" onClick={() => setSfOpen(false)}>
+                          {t("common.cancel")}
+                        </Button>
+                        <Button type="submit" disabled={sfLoading}>
+                          {sfLoading ? t("common.loading") : t("profilePage.createInSalesforce")}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+                )}
+              </div>
             </div>
           </div>
         </form>

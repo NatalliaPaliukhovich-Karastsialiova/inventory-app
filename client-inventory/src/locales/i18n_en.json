@@ -254,7 +254,13 @@
     "own": "Own",
     "access": "Access",
     "confirmDeleteTitle": "Delete inventories",
-    "confirmDeleteDescription": "Are you sure you want to delete selected inventories?"
+    "confirmDeleteDescription": "Are you sure you want to delete selected inventories?",
+    "syncSalesforce": "Create in Salesforce",
+    "syncSalesforceTitle": "Create Account and Contact in Salesforce",
+    "sfAccountName": "Account Name",
+    "sfPhone": "Phone",
+    "sfWebsite": "Website",
+    "createInSalesforce": "Create"
   },
   "pieChart": {
     "totalItems": "Total items",
@@ -273,6 +279,20 @@
     "items": "Items",
     "noResults": "No results found",
     "resultsFor": "Results for"
+  },
+  "ticket": {
+    "title": "Create support ticket",
+    "summary": "Summary",
+    "priority": "Priority",
+    "high": "High",
+    "average": "Average",
+    "low": "Low",
+    "reportedBy": "Reported by",
+    "inventory": "Inventory",
+    "link": "Link",
+    "submit": "Submit",
+    "help": "Help",
+    "createLink": "Create support ticket"
   },
   "table": {
     "columns": {
@@ -298,6 +318,7 @@
     "email": "Email",
     "role": "Role",
     "account": "Account",
+    "salesforceAccountId": "Salesforce Account ID",
     "avatarUploadHint": "Tip: To set your profile photo, click the image area and upload a picture. High‑quality, square images work best.",
     "associatedAccounts": "Associated Accounts"
   },

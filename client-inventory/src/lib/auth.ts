@@ -56,7 +56,8 @@ const baseProfileSchema = z.object({
   avatar: z.string(),
   familyName: z.string(),
   givenName: z.string(),
-  role: z.string()
+  role: z.string(),
+  salesforceAccountId: z.string()
 });
 
 export type ProfileSchema = z.infer<typeof baseProfileSchema>;

@@ -254,7 +254,13 @@
     "own": "Мои",
     "access": "Доступ",
     "confirmDeleteTitle": "Удаление инвентарей",
-    "confirmDeleteDescription": "Вы уверены, что хотите удалить выбранные инвентари?"
+    "confirmDeleteDescription": "Вы уверены, что хотите удалить выбранные инвентари?",
+    "syncSalesforce": "Создать в Salesforce",
+    "syncSalesforceTitle": "Создать аккаунт и контакт в Salesforce",
+    "sfAccountName": "Название аккаунта",
+    "sfPhone": "Телефон",
+    "sfWebsite": "Сайт",
+    "createInSalesforce": "Создать"
   },
   "pieChart": {
     "totalItems": "Всего предметов",
@@ -273,6 +279,20 @@
     "items": "Предметы",
     "noResults": "Ничего не найдено",
     "resultsFor": "Результаты для"
+  },
+  "ticket": {
+    "title": "Создать заявку в поддержку",
+    "summary": "Краткое описание",
+    "priority": "Приоритет",
+    "high": "Высокий",
+    "average": "Средний",
+    "low": "Низкий",
+    "reportedBy": "Сообщил",
+    "inventory": "Инвентарь",
+    "link": "Ссылка",
+    "submit": "Отправить",
+    "help": "Помощь",
+    "createLink": "Создать заявку в поддержку"
   },
   "table": {
     "columns": {
@@ -298,6 +318,7 @@
     "email": "Эл. почта",
     "role": "Роль",
     "account": "Аккаунт",
+    "salesforceAccountId": "ID аккаунта Salesforce",
     "avatarUploadHint": "Подсказка: чтобы установить фото профиля, нажмите на область изображения и загрузите картинку. Лучше всего подходят квадратные изображения хорошего качества.",
     "associatedAccounts": "Связанные аккаунты"
   },

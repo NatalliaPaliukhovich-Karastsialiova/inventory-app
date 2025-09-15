@@ -521,3 +521,39 @@ export async function uploadFile(file: File): Promise<string | null> {
     return null;
   }
 }
+
+export async function syncMeToSalesforce(payload: { accountName?: string; phone?: string; companyWebsite?: string }): Promise<{ accountId: string; contactId: string; user?: any }> {
+  const user = useAuthStore.getState().user;
+  const { data } = await axios.post(
+    `${apiUrl}/api/v1/integrations/salesforce/sync-me`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${user?.token}`,
+        "Content-Type": "application/json"
+      }
+    }
+  );
+  return data as { accountId: string; contactId: string; user?: any };
+}
+
+export async function createSupportTicket(payload: {
+  summary: string;
+  priority: "High" | "Average" | "Low";
+  link: string;
+  inventoryId?: string | null;
+  adminEmails: string[];
+}) {
+  const user = useAuthStore.getState().user;
+  const { data } = await axios.post(
+    `${apiUrl}/api/v1/integrations/ticket`,
+    payload,
+    {
+      headers: {
+        Authorization: `Bearer ${user?.token}`,
+        "Content-Type": "application/json"
+      }
+    }
+  );
+  return data as { ok: boolean; path: string; id?: string | null };
+}
