@@ -152,7 +152,8 @@
     "role": "Role",
     "createdAt": "Created At",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "success": "Created successfully"
   },
   "homePage": {
     "failedToLoadStats": "Failed to load stats"
