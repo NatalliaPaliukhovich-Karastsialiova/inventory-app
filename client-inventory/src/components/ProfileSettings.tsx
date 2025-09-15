@@ -216,7 +216,7 @@ export function ProfileSettings() {
               <FormField
                 control={form.control}
                 name="salesforceAccountId"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>{t("profile.salesforceAccountId")}</FormLabel>
                     <FormControl>
